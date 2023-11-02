@@ -81,15 +81,23 @@ server.listen(5001, () => {
                 if (!chart.periods[0]) return;
                 // Do something...
                 chart.periods[0].symbol = chart.infos.name;
-                socket.emit("onData", chart.periods[0]);
+                chart.periods[0].time = chart.periods[0].time + chart.periods[0].depay;
+                socket.emit("onData", {chart: chart.periods[0], infos: chart.infos});
             });
 
 
-            
+            socket.on("searchMarket", (qrsearch) => {
+                try{
+                    TradingView.searchMarket(qrsearch).then((rs) => {
+                        socket.emit("searchrs", rs);
+                    })
+                }catch(err) {
+                    console.log(err);
+                }
+               
+            })
 
             socket.on("addsymbol", (symbol) => {
-                console.log("sysmbol:: ", symbol);
-                console.log("symbol.resolution:: ", symbol.resolution);
                 chart.setMarket(symbol.symbol, { // Set the market
                     timeframe: symbol.resolution,
                 });
