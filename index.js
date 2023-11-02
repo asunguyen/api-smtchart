@@ -66,7 +66,14 @@ server.listen(5001, () => {
             const client = new TradingView.Client(); // Creates a websocket client
 
             const chart = new client.Session.Chart(); // Init a Chart session
-
+            let loadFirst = "loadSymbol";
+            socket.on("loadSymbol", (data) => {
+                loadFirst = "loadSymbol";
+            })
+            chart.setMarket("SSI", { // Set the market
+                timeframe: "1440",
+                range: 2000
+            });
             
             chart.onError((...err) => { // Listen for errors (can avoid crash)
                 console.error('Chart error:', ...err);
@@ -80,9 +87,30 @@ server.listen(5001, () => {
             chart.onUpdate(() => { // When price changes
                 if (!chart.periods[0]) return;
                 // Do something...
-                if(chart.periods.length > 2) {
-                    socket.emit("rsBar", {chart: chart.periods, infos: chart.infos})
-                } else {
+                if(loadFirst == "loadSymbol") {
+                    let chartData = [];
+                    let timeCheck = 0;
+
+                    for(var i = 0; i < chart.periods.length; i++) {
+                        if (timeCheck != chart.periods[i].time) {
+                            chartData.push(chart.periods[i]);
+                            timeCheck = chart.periods[i].time;
+                        }
+                    }
+                    socket.emit("loadSymbol", {chart: chartData, infos: chart.infos});
+                }
+                if (loadFirst == "getBar"){
+                    let chartData = [];
+                    let timeCheck = 0;
+                    for(var i = 0; i < chart.periods.length; i++) {
+                        if (timeCheck != chart.periods[i].time) {
+                            timeCheck = chart.periods[i].time;
+                            chartData.push(chart.periods[i]);
+                        }
+                    }
+                    socket.emit("rsBar", {chart: chartData, infos: chart.infos});
+                }
+                if (loadFirst == "addsymbol") {
                     chart.periods[0].symbol = chart.infos.name;
                     chart.periods[0].time = chart.periods[0].time + chart.periods[0].depay;
                     socket.emit("onData", {chart: chart.periods[0], infos: chart.infos});
@@ -103,6 +131,8 @@ server.listen(5001, () => {
             })
 
             socket.on("addsymbol", (symbol) => {
+                loadFirst = "addsymbol";
+                console.log("symbol.resolution:: ", symbol.resolution);
                 chart.setMarket(symbol.symbol, { // Set the market
                     timeframe: symbol.resolution,
                 });
@@ -110,9 +140,10 @@ server.listen(5001, () => {
             })
             socket.on("getBar", (qrsearch) => {
                 try{
-                    let range = parseInt((qrsearch.to - qrsearch.from)/60);
+                    loadFirst = "getBar";
+                    let range = parseInt((qrsearch.to - qrsearch.from)/1);
                     chart.setMarket(qrsearch.symbol.name, {
-                        timeframe: `60`,
+                        timeframe: "1",
                         to: qrsearch.to,
                         from: qrsearch.from,
                         range: range
