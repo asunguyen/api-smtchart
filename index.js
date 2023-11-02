@@ -112,7 +112,7 @@ server.listen(5001, () => {
                 try{
                     let range = parseInt((qrsearch.to - qrsearch.from)/60);
                     chart.setMarket(qrsearch.symbol.name, {
-                        timeframe: `${qrsearch.resolution}`,
+                        timeframe: `60`,
                         to: qrsearch.to,
                         from: qrsearch.from,
                         range: range
