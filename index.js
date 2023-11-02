@@ -80,9 +80,14 @@ server.listen(5001, () => {
             chart.onUpdate(() => { // When price changes
                 if (!chart.periods[0]) return;
                 // Do something...
-                chart.periods[0].symbol = chart.infos.name;
-                chart.periods[0].time = chart.periods[0].time + chart.periods[0].depay;
-                socket.emit("onData", {chart: chart.periods[0], infos: chart.infos});
+                if(chart.periods.length > 2) {
+                    socket.emit("rsBar", {chart: chart.periods, infos: chart.infos})
+                } else {
+                    chart.periods[0].symbol = chart.infos.name;
+                    chart.periods[0].time = chart.periods[0].time + chart.periods[0].depay;
+                    socket.emit("onData", {chart: chart.periods[0], infos: chart.infos});
+                }
+                
             });
 
 
@@ -102,6 +107,19 @@ server.listen(5001, () => {
                     timeframe: symbol.resolution,
                 });
     
+            })
+            socket.on("getBar", (qrsearch) => {
+                try{
+                    let range = parseInt((qrsearch.to - qrsearch.from)/60);
+                    chart.setMarket(qrsearch.symbol.name, {
+                        timeframe: `${qrsearch.resolution}`,
+                        to: qrsearch.to,
+                        from: qrsearch.from,
+                        range: range
+                    })
+                }catch(err) {
+                    console.log("err get bar:: ", err);
+                }
             })
         });
     }).catch((e) => {
