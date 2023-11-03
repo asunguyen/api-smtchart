@@ -54,6 +54,7 @@ const io = new Server(server);
 
 // trading view api
 const TradingView = require("@mathieuc/tradingview");
+const { symbols } = require('./controllers/chartController');
 
 
 
@@ -66,15 +67,16 @@ server.listen(5001, () => {
             const client = new TradingView.Client(); // Creates a websocket client
 
             const chart = new client.Session.Chart(); // Init a Chart session
-            let loadFirst = "loadSymbol";
-            socket.on("loadSymbol", (data) => {
-                loadFirst = "loadSymbol";
+            let getHistory = false;
+            let infoSymbol;
+            socket.on("stopGetHistory", () => {
+                getHistory = false;
             })
             chart.setMarket("SSI", { // Set the market
-                timeframe: "1440",
-                range: 2000
+                timeframe: "D",
+                range: 30
             });
-            
+
             chart.onError((...err) => { // Listen for errors (can avoid crash)
                 console.error('Chart error:', ...err);
                 // Do something...
@@ -86,71 +88,44 @@ server.listen(5001, () => {
 
             chart.onUpdate(() => { // When price changes
                 if (!chart.periods[0]) return;
-                // Do something...
-                if(loadFirst == "loadSymbol") {
-                    let chartData = [];
-                    let timeCheck = 0;
-
+                infoSymbol = chart.infos;
+                if (getHistory) {
+                    getHistory = false;
+                    let dataChart = [];
                     for(var i = 0; i < chart.periods.length; i++) {
-                        if (timeCheck != chart.periods[i].time) {
-                            chartData.push(chart.periods[i]);
-                            timeCheck = chart.periods[i].time;
-                        }
+                        chart.periods[i].symbol = chart.infos.name;
+                        chart.periods[i].time = chart.periods[i].time + chart.infos.depay;
+                        dataChart.push(chart.periods[i]);
                     }
-                    socket.emit("loadSymbol", {chart: chartData, infos: chart.infos});
-                }
-                if (loadFirst == "getBar"){
-                    let chartData = [];
-                    let timeCheck = 0;
-                    for(var i = 0; i < chart.periods.length; i++) {
-                        if (timeCheck != chart.periods[i].time) {
-                            timeCheck = chart.periods[i].time;
-                            chartData.push(chart.periods[i]);
-                        }
-                    }
-                    socket.emit("rsBar", {chart: chartData, infos: chart.infos});
-                }
-                if (loadFirst == "addsymbol") {
+                    socket.emit("resHistorySymbol", { chart: dataChart, infos: chart.infos });
+                } else {
+                    // Do something...
                     chart.periods[0].symbol = chart.infos.name;
-                    chart.periods[0].time = chart.periods[0].time + chart.periods[0].depay;
-                    socket.emit("onData", {chart: chart.periods[0], infos: chart.infos});
+                    chart.periods[0].time = chart.periods[0].time + chart.infos.depay;
+                    socket.emit("onData", { chart: chart.periods[0], infos: chart.infos });
                 }
                 
+
             });
-
-
-            socket.on("searchMarket", (qrsearch) => {
-                try{
-                    TradingView.searchMarket(qrsearch).then((rs) => {
-                        socket.emit("searchrs", rs);
-                    })
-                }catch(err) {
-                    console.log(err);
-                }
-               
-            })
-
-            socket.on("addsymbol", (symbol) => {
-                loadFirst = "addsymbol";
-                console.log("symbol.resolution:: ", symbol.resolution);
-                chart.setMarket(symbol.symbol, { // Set the market
-                    timeframe: symbol.resolution,
+            socket.on("searchSymbol",(symbolName) => {
+                TradingView.searchMarket(symbolName).then((rs) => {
+                    socket.emit("resSearchSymbol", rs);
                 });
-    
+            });
+            socket.on("activeDataHistory", (symbolName) => {
+                //socket.emit("", infoSymbol);
             })
-            socket.on("getBar", (qrsearch) => {
-                try{
-                    loadFirst = "getBar";
-                    let range = parseInt((qrsearch.to - qrsearch.from)/1);
-                    chart.setMarket(qrsearch.symbol.name, {
-                        timeframe: "1",
-                        to: qrsearch.to,
-                        from: qrsearch.from,
-                        range: range
-                    })
-                }catch(err) {
-                    console.log("err get bar:: ", err);
+            socket.on("getHistorySymbol", (qrsearch) => {
+                if (qrsearch.getHistory) {
+                    getHistory = true;
                 }
+                const ranged = parseInt((qrsearch.to - qrsearch.from)/60);
+                chart.setMarket(qrsearch.symbol, {
+                    timeframe: '1',
+                    range: ranged, // Can be positive to get before or negative to get after
+                    to: qrsearch.to,
+                    from: qrsearch.from
+                  });
             })
         });
     }).catch((e) => {
