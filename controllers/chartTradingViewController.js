@@ -8,7 +8,11 @@ const ChartTradingViewController = {
             const fromDate = req.query.from || 0;
             const toDate = req.query.to || new Date().getTime();
             let resol = "1";
+            let ranged = parseInt((toDate - fromDate));
             const resolution = req.query.resolution || "D";
+            if (parseFloat(resolution) >= 60) {
+                resol = "H";
+            }
             if (resolution.search("D") >= 0) {
                 resol = "D"
             }
@@ -18,8 +22,9 @@ const ChartTradingViewController = {
             if (resolution.search("M") >= 0) {
                 resol = "M"
             }
-            
-            const ranged = parseInt((toDate - fromDate)/60);
+            if (resol != "1") {
+                ranged = parseInt((toDate - fromDate)/60);
+            } 
             const client = new TradingView.Client();
             const chart = new client.Session.Chart();
             chart.setMarket(exchange+ ":" + symbol, {
