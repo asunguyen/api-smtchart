@@ -10,6 +10,7 @@ const userRouter = require("./routers/user");
 const publicRouter = require("./routers/public");
 const licenseRouter = require("./routers/licensekeyRouter");
 const vimoRouter = require("./routers/vimoRouter");
+const tradingViewRouter = require("./routers/tradingViewRouter");
 
 const { createServer } = require('node:http');
 const { Server } = require('socket.io');
@@ -28,6 +29,7 @@ app.use("/public", express.static(path.join(__dirname, "/public")));
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
 app.use("/v1/chart", publicRouter);
+app.use("/v1/data", tradingViewRouter)
 app.use("/v1/license", licenseRouter);
 app.use("/v1/vimo", vimoRouter);
 
@@ -54,7 +56,6 @@ const io = new Server(server);
 
 // trading view api
 const TradingView = require("@mathieuc/tradingview");
-const { symbols } = require('./controllers/chartController');
 
 
 
@@ -67,16 +68,10 @@ server.listen(5001, () => {
             const client = new TradingView.Client(); // Creates a websocket client
 
             const chart = new client.Session.Chart(); // Init a Chart session
-            let getHistory = false;
-            let infoSymbol;
-            socket.on("stopGetHistory", () => {
-                getHistory = false;
-            })
-            chart.setMarket("SSI", { // Set the market
-                timeframe: "D",
-                range: 30
+            chart.setMarket("SSI", {
+                timeframe: "1",
+                range: 20
             });
-
             chart.onError((...err) => { // Listen for errors (can avoid crash)
                 console.error('Chart error:', ...err);
                 // Do something...
@@ -88,44 +83,26 @@ server.listen(5001, () => {
 
             chart.onUpdate(() => { // When price changes
                 if (!chart.periods[0]) return;
-                infoSymbol = chart.infos;
-                if (getHistory) {
-                    getHistory = false;
-                    let dataChart = [];
-                    for(var i = 0; i < chart.periods.length; i++) {
-                        chart.periods[i].symbol = chart.infos.name;
-                        chart.periods[i].time = chart.periods[i].time + chart.infos.depay;
-                        dataChart.push(chart.periods[i]);
-                    }
-                    socket.emit("resHistorySymbol", { chart: dataChart, infos: chart.infos });
-                } else {
-                    // Do something...
-                    chart.periods[0].symbol = chart.infos.name;
-                    chart.periods[0].time = chart.periods[0].time + chart.infos.depay;
-                    socket.emit("onData", { chart: chart.periods[0], infos: chart.infos });
+                let data = chart.periods;
+                data[0].symbol = chart.infos.name;
+                if (chart.infos.depay) {
+                    data[0].time = data[0].time + chart.infos.depay;
                 }
-                
+                socket.emit("onData", { chart: data[0]});
+            });
+            socket.on("changeSymbol", (data) => {
+                try {
+                    console.log("changeSymbol:: ")
+                    const toDate = new Date().getTime();
+                    chart.setMarket(data.symbolInfo.exchange + ":" + data.symbolInfo.name, {
+                        timeframe: "1",
+                        to: toDate * 1000,
+                        range: 100
+                    });
+                } catch (err) {
+                    console.log("changeSymbol", err);
+                }
 
-            });
-            socket.on("searchSymbol",(symbolName) => {
-                TradingView.searchMarket(symbolName).then((rs) => {
-                    socket.emit("resSearchSymbol", rs);
-                });
-            });
-            socket.on("activeDataHistory", (symbolName) => {
-                //socket.emit("", infoSymbol);
-            })
-            socket.on("getHistorySymbol", (qrsearch) => {
-                if (qrsearch.getHistory) {
-                    getHistory = true;
-                }
-                const ranged = parseInt((qrsearch.to - qrsearch.from)/60);
-                chart.setMarket(qrsearch.symbol, {
-                    timeframe: '1',
-                    range: ranged, // Can be positive to get before or negative to get after
-                    to: qrsearch.to,
-                    from: qrsearch.from
-                  });
             })
         });
     }).catch((e) => {

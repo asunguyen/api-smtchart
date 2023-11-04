@@ -218,7 +218,8 @@ const chartController = {
         }catch(err) {
             res.json({code: 500, error: err});
         }
-    }
+    },
+    
 }
 
 module.exports = chartController;
