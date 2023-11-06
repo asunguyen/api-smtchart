@@ -68,6 +68,7 @@ server.listen(5001, () => {
             const client = new TradingView.Client(); // Creates a websocket client
 
             const chart = new client.Session.Chart(); // Init a Chart session
+            chart.setTimezone('Asia/Ho_Chi_Minh');
             chart.setMarket("SSI", {
                 timeframe: "1",
                 range: 20
@@ -88,13 +89,12 @@ server.listen(5001, () => {
                 if (chart.infos.depay) {
                     data[0].time = data[0].time + chart.infos.depay;
                 }
-                socket.emit("onData", { chart: data[0]});
+                socket.emit("onData", { chart: data[0], infos: chart.infos});
             });
             socket.on("changeSymbol", (data) => {
                 try {
-                    console.log("changeSymbol:: ")
                     const toDate = new Date().getTime();
-                    chart.setMarket(data.symbolInfo.exchange + ":" + data.symbolInfo.name, {
+                    chart.setMarket(data.symbolInfo.name, {
                         timeframe: "1",
                         to: toDate * 1000,
                         range: 100

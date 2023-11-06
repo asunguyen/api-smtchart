@@ -27,7 +27,8 @@ const ChartTradingViewController = {
             } 
             const client = new TradingView.Client();
             const chart = new client.Session.Chart();
-            chart.setMarket(exchange+ ":" + symbol, {
+            chart.setTimezone('Asia/Ho_Chi_Minh');
+            chart.setMarket(symbol, {
                 timeframe: resol,
                 to: toDate * 1000,
                 from: fromDate * 1000,
@@ -44,18 +45,30 @@ const ChartTradingViewController = {
     },
     searchSymbol: async (req, res) => {
         try {
-            const symbolName = req.query.symbol || "";
+            let symbolName = req.query.symbol || "";
+            if (symbolName.search(":") >= 0) {
+                symbolName = symbolName.split(":")[1];
+            }
             TradingView.searchMarket(symbolName).then((rs) => {
                 let allSymbols = [];
                 rs.forEach(symbol => {
                     allSymbols = [...allSymbols, {
                         symbol: symbol.symbol,
                         pro_name: symbol.symbol,
-                        full_name: symbol.symbol,
+                        full_name: symbol.id,
                         description: symbol.description,
                         exchange: symbol.exchange,
                         type: symbol.type,
-                        pathRq: symbol.pathRq
+                        pathRq: symbol.pathRq,
+                        id: symbol.id,
+                        unitId: symbol.id,
+                        fullExchange: symbol.fullExchange,
+                        getTA: symbol.getTA,
+                        currency_code: symbol.id,
+                        extension: {
+                            unitId: symbol.id,
+                            currencyCode: symbol.id
+                        }
                     }];
                 });
                 res.json({ code: 200, data: allSymbols });
