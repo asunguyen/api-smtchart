@@ -56,10 +56,6 @@ const io = new Server(server);
 
 // trading view api
 const TradingView = require("@mathieuc/tradingview");
-
-
-
-
 server.listen(5001, () => {
     mongoose.connect(dbUrl, connectionParams).then(() => {
         console.log("connect db success");
