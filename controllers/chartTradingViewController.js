@@ -152,7 +152,7 @@ const ChartTradingViewController = {
             const client = new TradingView.Client();
             const chart = new client.Session.Chart();
             chart.setTimezone('Asia/Ho_Chi_Minh');
-            chart.setMarket(symbol, {
+            chart.setMarket(exchange+ ":" + symbol, {
                 timeframe: resol,
                 to: toDate * 1000,
                 from: fromDate * 1000,
@@ -162,6 +162,15 @@ const ChartTradingViewController = {
                 if (!chart.periods[0]) return;
                 const data = chart.periods.reverse();
                 res.json({ code: 200, data: data });
+            });
+            chart.onError((...err) => { // Listen for errors (can avoid crash)
+                chart.setMarket(symbol, {
+                    timeframe: resol,
+                    to: toDate * 1000,
+                    from: fromDate * 1000,
+                    range: ranged
+                });
+                // Do something...
             });
         } catch (err) {
             res.json({ code: 500, error: err });

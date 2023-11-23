@@ -90,11 +90,19 @@ server.listen(5001, () => {
             socket.on("changeSymbol", (data) => {
                 try {
                     const toDate = new Date().getTime();
-                    chart.setMarket(data.symbolInfo.name, {
-                        timeframe: "1",
-                        to: toDate * 1000,
-                        range: 100
-                    });
+                    if (data.symbolInfo.type == "forex") {
+                        chart.setMarket(data.symbolInfo.name, {
+                            timeframe: "1",
+                            to: toDate * 1000,
+                            range: 100
+                        });
+                    } else {
+                        chart.setMarket(data.symbolInfo.exchange + ":" + data.symbolInfo.name, {
+                            timeframe: "1",
+                            to: toDate * 1000,
+                            range: 100
+                        });
+                    }
                 } catch (err) {
                     console.log("changeSymbol", err);
                 }
