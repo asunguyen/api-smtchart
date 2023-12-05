@@ -376,8 +376,19 @@ const vimoController = {
     },
     dulieuVimo: async(req, res) => {
         try {
-            const response = await axios.post("https://finance.vietstock.vn/data/reportdatabydisplay?type=true")
-            res.json({code: 200, data: response});
+            const response = await axios({
+                method: "POST",
+                url: "https://finance.vietstock.vn/data/reportdatabydisplay",
+                headers:{
+                    'Accept': '*/*',
+                    'Accept-Language': 'en-GB,en;q=0.9,en-US;q=0.8',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'Cookie': '__RequestVerificationToken=itgcdMQgkBrwE23iTQaHSqsHtp3oy7mZJtkaJhP_MB9yPkbWA1HrEPVYSyki9vmPjjlCz4n4TlitXwVpPMw-Sze8jP77B7Iqueof9kyzWA41;; ASP.NET_SessionId=pkvx1z40qq1f4ybslejr5sf3; language=vi-VN',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.31'
+                    },
+                    data: "type=true&__RequestVerificationToken=hGfWG4LE8eXkW4jyy24ck-OM7ncVmQVN-mTcKuxNSnYA3y9EFPOyFCbE5QAtR0U3BQ4ahvI7TfTCQ124CrtzlvED5O68FgAq56M_ajofSOU1"
+            });
+            res.json({code: 200, data: response.data});
         }catch(err) {
             res.json({code: 500, error: err});
         }
