@@ -1,128 +1,203 @@
 const TradingView = require("@mathieuc/tradingview");
+const axios = require('axios');
 const vn30 = [
+    // {
+    //     typespecs: [
+    //         "continuous",
+    //         "synthetic"
+    //     ],
+    //     exchange: "HNX",
+    //     country: "VN",
+    //     currency_code: "VND",
+    //     description: "VN301! INDEX FUTURES",
+    //     provider_id: "ice",
+    //     symbol: "VN301!",
+    //     type: "futures",
+    //     "pro_name": "VN301!",
+    //     "full_name": "HNX:VN301!",
+    //     "id": "HNX:VN301!",
+    //     "unitId": "HNX:VN301!",
+    //     "fullExchange": "HNX",
+    //     "extension": {
+    //         "unitId": "HNX:VN301!",
+    //         "currencyCode": "HNX:VN301!"
+    //     }
+    // },
+    // {
+    //     typespecs: [
+    //         "continuous",
+    //         "synthetic"
+    //     ],
+    //     exchange: "HNX",
+    //     country: "VN",
+    //     currency_code: "VND",
+    //     description: "VN302! INDEX FUTURES",
+    //     provider_id: "ice",
+    //     symbol: "VN302!",
+    //     type: "futures",
+    //     "pro_name": "VN302!",
+    //     "full_name": "HNX:VN302!",
+    //     "id": "HNX:VN302!",
+    //     "unitId": "HNX:VN302!",
+    //     "fullExchange": "HNX",
+    //     "extension": {
+    //         "unitId": "HNX:VN302!",
+    //         "currencyCode": "HNX:VN302!"
+    //     }
+    // },
+    // {
+    //     symbol: "VN30X2023",
+    //     exchange: "HNX",
+    //     country: "VN",
+    //     currency_code: "VND",
+    //     description: "VN30X2023 INDEX FUTURES",
+    //     provider_id: "ice",
+    //     type: "futures",
+    //     "pro_name": "VN30X2023",
+    //     "full_name": "HNX:VN30X2023",
+    //     "id": "HNX:VN30X2023",
+    //     "unitId": "HNX:VN30X2023",
+    //     "fullExchange": "HNX",
+    //     "extension": {
+    //         "unitId": "HNX:VN30X2023",
+    //         "currencyCode": "HNX:VN30X2023"
+    //     }
+    // },
+    // {
+    //     symbol: "VN30Z2023",
+    //     exchange: "HNX",
+    //     country: "VN",
+    //     currency_code: "VND",
+    //     description: "VN30 INDEX FUTURES DEC 2023",
+    //     provider_id: "ice",
+    //     type: "futures",
+    //     "pro_name": "VN30Z2023",
+    //     "full_name": "HNX:VN30Z2023",
+    //     "id": "HNX:VN30Z2023",
+    //     "unitId": "HNX:VN30Z2023",
+    //     "fullExchange": "HNX",
+    //     "extension": {
+    //         "unitId": "HNX:VN30Z2023",
+    //         "currencyCode": "HNX:VN30Z2023"
+    //     }
+    // },
+    // {
+    //     symbol: "VN30H2024",
+    //     description: "VN30H2024 INDEX FUTURES MAR 2024",
+    //     exchange: "HNX",
+    //     country: "VN",
+    //     currency_code: "VND",
+    //     provider_id: "ice",
+    //     type: "futures",
+    //     "pro_name": "VN30H2024",
+    //     "full_name": "HNX:VN30H2024",
+    //     "id": "HNX:VN30H2024",
+    //     "unitId": "HNX:VN30H2024",
+    //     "fullExchange": "HNX",
+    //     "extension": {
+    //         "unitId": "HNX:VN30H2024",
+    //         "currencyCode": "HNX:VN30H2024"
+    //     }
+    // },
+    // {
+    //     symbol: "VN30M2024",
+    //     description: "VN30M2024 INDEX FUTURES JUN 2024",
+    //     exchange: "HNX",
+    //     country: "VN",
+    //     currency_code: "VND",
+    //     provider_id: "ice",
+    //     type: "futures",
+    //     "pro_name": "VN30M2024",
+    //     "full_name": "HNX:VN30M2024",
+    //     "id": "HNX:VN30M2024",
+    //     "unitId": "HNX:VN30M2024",
+    //     "fullExchange": "HNX",
+    //     "extension": {
+    //         "unitId": "HNX:VN30M2024",
+    //         "currencyCode": "HNX:VN30M2024"
+    //     }
+    // },
     {
-        typespecs: [
-            "continuous",
-            "synthetic"
-        ],
-        exchange: "HNX",
+        "symbol": "VN30F1M",
+        "full_name": "VN30F1M",
+        "short_name": "VN30F1M",
+        "description": "VN30F1M",
+        "exchange": "HNX",
+        "type": "futures",
         country: "VN",
         currency_code: "VND",
-        description: "VN301! INDEX FUTURES",
         provider_id: "ice",
-        symbol: "VN301!",
-        type: "futures",
-        "pro_name": "VN301!",
-        "full_name": "HNX:VN301!",
-        "id": "HNX:VN301!",
-        "unitId": "HNX:VN301!",
+        "pro_name": "VN30F1M",
+        "full_name": "HNX:VN30F1M",
+        "id": "HNX:VN30F1M",
+        "unitId": "HNX:VN30F1M",
         "fullExchange": "HNX",
-        "currency_code": "HNX:VN301!",
         "extension": {
-            "unitId": "HNX:VN301!",
-            "currencyCode": "HNX:VN301!"
-        }
+            "unitId": "HNX:VN30F1M",
+            "currencyCode": "HNX:VN30F1M"
+        },
     },
     {
-        typespecs: [
-            "continuous",
-            "synthetic"
-        ],
-        exchange: "HNX",
-        country: "VN",
-        currency_code: "VND",
-        description: "VN302! INDEX FUTURES",
-        provider_id: "ice",
-        symbol: "VN302!",
-        type: "futures",
-        "pro_name": "VN302!",
-        "full_name": "HNX:VN302!",
-        "id": "HNX:VN302!",
-        "unitId": "HNX:VN302!",
-        "fullExchange": "HNX",
-        "currency_code": "HNX:VN302!",
-        "extension": {
-            "unitId": "HNX:VN302!",
-            "currencyCode": "HNX:VN302!"
-        }
-    },
-    {
-        symbol: "VN30X2023",
-        exchange: "HNX",
-        country: "VN",
-        currency_code: "VND",
-        description: "VN30X2023 INDEX FUTURES",
-        provider_id: "ice",
-        type: "futures",
-        "pro_name": "VN30X2023",
-        "full_name": "HNX:VN30X2023",
-        "id": "HNX:VN30X2023",
-        "unitId": "HNX:VN30X2023",
-        "fullExchange": "HNX",
-        "currency_code": "HNX:VN30X2023",
-        "extension": {
-            "unitId": "HNX:VN30X2023",
-            "currencyCode": "HNX:VN30X2023"
-        }
-    },
-    {
-        symbol: "VN30Z2023",
-        exchange: "HNX",
-        country: "VN",
-        currency_code: "VND",
-        description: "VN30 INDEX FUTURES DEC 2023",
-        provider_id: "ice",
-        type: "futures",
-        "pro_name": "VN30Z2023",
-        "full_name": "HNX:VN30Z2023",
-        "id": "HNX:VN30Z2023",
-        "unitId": "HNX:VN30Z2023",
-        "fullExchange": "HNX",
-        "currency_code": "HNX:VN30Z2023",
-        "extension": {
-            "unitId": "HNX:VN30Z2023",
-            "currencyCode": "HNX:VN30Z2023"
-        }
-    },
-    {
-        symbol: "VN30H2024",
-        description: "VN30H2024 INDEX FUTURES MAR 2024",
-        exchange: "HNX",
+        "symbol": "VN30F1Q",
+        "full_name": "VN30F1Q",
+        "short_name": "VN30F1Q",
+        "description": "VN30F1Q",
+        "exchange": "HNX",
+        "type": "futures",
         country: "VN",
         currency_code: "VND",
         provider_id: "ice",
-        type: "futures",
-        "pro_name": "VN30H2024",
-        "full_name": "HNX:VN30H2024",
-        "id": "HNX:VN30H2024",
-        "unitId": "HNX:VN30H2024",
+        "pro_name": "VN30F1Q",
+        "full_name": "HNX:VN30F1Q",
+        "id": "HNX:VN30F1Q",
+        "unitId": "HNX:VN30F1Q",
         "fullExchange": "HNX",
-        "currency_code": "HNX:VN30H2024",
         "extension": {
-            "unitId": "HNX:VN30H2024",
-            "currencyCode": "HNX:VN30H2024"
-        }
+            "unitId": "HNX:VN30F1Q",
+            "currencyCode": "HNX:VN30F1Q"
+        },
     },
     {
-        symbol: "VN30M2024",
-        description: "VN30M2024 INDEX FUTURES JUN 2024",
-        exchange: "HNX",
+        "symbol": "VN30F2M",
+        "full_name": "VN30F2M",
+        "short_name": "VN30F2M",
+        "description": "VN30F2M",
+        "exchange": "HNX",
+        "type": "futures",
         country: "VN",
         currency_code: "VND",
         provider_id: "ice",
-        type: "futures",
-        "pro_name": "VN30M2024",
-        "full_name": "HNX:VN30M2024",
-        "id": "HNX:VN30M2024",
-        "unitId": "HNX:VN30M2024",
+        "pro_name": "VN30F2M",
+        "full_name": "HNX:VN30F2M",
+        "id": "HNX:VN30F2M",
+        "unitId": "HNX:VN30F2M",
         "fullExchange": "HNX",
-        "currency_code": "HNX:VN30M2024",
         "extension": {
-            "unitId": "HNX:VN30M2024",
-            "currencyCode": "HNX:VN30M2024"
-        }
+            "unitId": "HNX:VN30F2M",
+            "currencyCode": "HNX:VN30F2M"
+        },
     },
-   
+    {
+        "symbol": "VN30F2Q",
+        "full_name": "VN30F2Q",
+        "short_name": "VN30F2Q",
+        "description": "VN30F2Q",
+        "exchange": "HNX",
+        "type": "futures",
+        country: "VN",
+        currency_code: "VND",
+        provider_id: "ice",
+        "pro_name": "VN30F2Q",
+        "full_name": "HNX:VN30F2Q",
+        "id": "HNX:VN30F2Q",
+        "unitId": "HNX:VN30F2Q",
+        "fullExchange": "HNX",
+        "extension": {
+            "unitId": "HNX:VN30F2Q",
+            "currencyCode": "HNX:VN30F2Q"
+        },
+    }
+
 ]
 const ChartTradingViewController = {
     historyChart: async (req, res) => {
@@ -134,6 +209,7 @@ const ChartTradingViewController = {
             let resol = "1";
             let ranged = parseInt((toDate - fromDate));
             const resolution = req.query.resolution || "D";
+
             if (parseFloat(resolution) >= 60) {
                 resol = "H";
             }
@@ -149,29 +225,39 @@ const ChartTradingViewController = {
             if (resol != "1") {
                 ranged = parseInt((toDate - fromDate) / 60);
             }
-            const client = new TradingView.Client();
-            const chart = new client.Session.Chart();
-            chart.setTimezone('Asia/Ho_Chi_Minh');
-            chart.setMarket(exchange+ ":" + symbol, {
-                timeframe: resol,
-                to: toDate * 1000,
-                from: fromDate * 1000,
-                range: ranged
-            });
-            chart.onUpdate(() => { // When price changes
-                if (!chart.periods[0]) return;
-                const data = chart.periods.reverse();
-                res.json({ code: 200, data: data });
-            });
-            chart.onError((...err) => { // Listen for errors (can avoid crash)
-                chart.setMarket(symbol, {
+            if (symbol && (symbol == "VN30F1M" || symbol == "VN30F1Q" || symbol == "VN30F2M" || symbol == "VN30F2Q")) {
+                const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/derivative?from=${fromDate}&to=${toDate}&symbol=${symbol}&resolution=${resol}`;
+                const response = await axios.get(url);
+                let dataRP = response.data;
+                res.json({code: 200, data: dataRP});
+                return;
+
+            } else {
+                const client = new TradingView.Client();
+                const chart = new client.Session.Chart();
+                chart.setTimezone('Asia/Ho_Chi_Minh');
+                chart.setMarket(exchange + ":" + symbol, {
                     timeframe: resol,
                     to: toDate * 1000,
                     from: fromDate * 1000,
                     range: ranged
                 });
-                // Do something...
-            });
+                chart.onUpdate(async () => { // When price changes
+                    if (!chart.periods[0]) return;
+                    let data = chart.periods.reverse();
+                    res.json({ code: 200, data: data });
+                });
+                chart.onError((...err) => { // Listen for errors (can avoid crash)
+                    chart.setMarket(symbol, {
+                        timeframe: resol,
+                        to: toDate * 1000,
+                        from: fromDate * 1000,
+                        range: ranged
+                    });
+                    // Do something...
+                });
+            }
+            
         } catch (err) {
             res.json({ code: 500, error: err });
         }
@@ -183,7 +269,7 @@ const ChartTradingViewController = {
                 symbolName = symbolName.split(":")[1];
             }
             const listSb = vn30.filter(x => {
-                const check = x.symbol.toLowerCase().search(symbolName.toLowerCase()) >= 0; 
+                const check = x.symbol.toLowerCase().search(symbolName.toLowerCase()) >= 0;
                 return check
             });
             TradingView.searchMarket(symbolName.toLowerCase()).then((rs) => {

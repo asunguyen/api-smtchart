@@ -65,12 +65,12 @@ server.listen(5001, () => {
 
             const chart = new client.Session.Chart(); // Init a Chart session
             chart.setTimezone('Asia/Ho_Chi_Minh');
-            chart.setMarket("SSI", {
+            chart.setMarket("VNINDEX", {
                 timeframe: "1",
                 range: 20
             });
             chart.onError((...err) => { // Listen for errors (can avoid crash)
-                console.error('Chart error:', ...err);
+                console.error('Chart error changeSymbol:', ...err);
                 // Do something...
             });
 
@@ -85,10 +85,11 @@ server.listen(5001, () => {
                 if (chart.infos.depay) {
                     data[0].time = data[0].time + chart.infos.depay;
                 }
-                socket.emit("onData", { chart: data[0], infos: chart.infos});
+                socket.emit("onData", { chart: data[0], infos: chart.infos });
             });
             socket.on("changeSymbol", (data) => {
                 try {
+			console.log("changeSymbol");
                     const toDate = new Date().getTime();
                     if (data.symbolInfo.type == "forex") {
                         chart.setMarket(data.symbolInfo.name, {

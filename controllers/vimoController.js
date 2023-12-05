@@ -271,7 +271,118 @@ const vimoController = {
         }catch(err) {
             res.json({code: 500, error: err});
         }
+    },
+    dlLichSuTKDatLenh: async(req, res) => {
+        try {
+            const symbol = req.query.Symbol || "VNINDEX";
+            const StartDate = req.query.StartDate || "";
+            const EndDate = req.query.EndDate || "";
+            const PageIndex = req.query.PageIndex || 1;
+            const PageSize = req.query.PageSize || 20;
+            const url = `https://s.cafef.vn/Ajax/PageNew/DataHistory/ThongKeDL.ashx?Symbol=${symbol}&StartDate=${StartDate}&EndDate=${EndDate}&PageIndex=${PageIndex}&PageSize=${PageSize}`;
+            const response = await axios.get(url);
+            res.json({code: 200, data: response.data});
+        }catch(err) {
+            res.json({code: 500, error: err});
+        }
+    },
+    dlLichSuGia: async(req, res) => {
+        try {
+            const symbol = req.query.Symbol || "VNINDEX";
+            const StartDate = req.query.StartDate || "";
+            const EndDate = req.query.EndDate || "";
+            const PageIndex = req.query.PageIndex || 1;
+            const PageSize = req.query.PageSize || 20;
+            const url = `https://s.cafef.vn/Ajax/PageNew/DataHistory/PriceHistory.ashx?Symbol=${symbol}&StartDate=${StartDate}&EndDate=${EndDate}&PageIndex=${PageIndex}&PageSize=${PageSize}`;
+            const response = await axios.get(url);
+            res.json({code: 200, data: response.data});
+        }catch(err) {
+            res.json({code: 500, error: err});
+        }
+    },
+    dlLichSuKhoiNgoai: async(req, res) => {
+        try {
+            const symbol = req.query.Symbol || "VNINDEX";
+            const StartDate = req.query.StartDate || "";
+            const EndDate = req.query.EndDate || "";
+            const PageIndex = req.query.PageIndex || 1;
+            const PageSize = req.query.PageSize || 20;
+            const url = `https://s.cafef.vn/Ajax/PageNew/DataHistory/GDKhoiNgoai.ashx?Symbol=${symbol}&StartDate=${StartDate}&EndDate=${EndDate}&PageIndex=${PageIndex}&PageSize=${PageSize}`;
+            const response = await axios.get(url);
+            res.json({code: 200, data: response.data});
+        }catch(err) {
+            res.json({code: 500, error: err});
+        }
+    },
+    dlLichSuTuDoanh: async(req, res) => {
+        try {
+            const symbol = req.query.Symbol || "VNINDEX";
+            const StartDate = req.query.StartDate || "";
+            const EndDate = req.query.EndDate || "";
+            const PageIndex = req.query.PageIndex || 1;
+            const PageSize = req.query.PageSize || 20;
+            const url = `https://s.cafef.vn/Ajax/PageNew/DataHistory/GDTuDoanh.ashx?Symbol=${symbol}&StartDate=${StartDate}&EndDate=${EndDate}&PageIndex=${PageIndex}&PageSize=${PageSize}`;
+            const response = await axios.get(url);
+            res.json({code: 200, data: response.data});
+        }catch(err) {
+            res.json({code: 500, error: err});
+        }
+    },
+    dlLichSuTheoPhien: async(req, res) => {
+        try {
+            const symbol = req.query.Symbol || "VNINDEX";
+            const StartDate = req.query.StartDate || "";
+            const EndDate = req.query.EndDate || "";
+            const url = `https://s.cafef.vn/Ajax/PageNew/DataHistory/PriceHistory.ashx?Symbol=${symbol}&StartDate=${StartDate}&EndDate=${EndDate}`;
+            const response = await axios.get(url);
+            res.json({code: 200, data: response.data});
+        }catch(err) {
+            res.json({code: 500, error: err});
+        }
+    },
+    dlLichSuDienBienTheoPhien: async(req, res) => {
+        try {
+            const symbol = req.query.symbol || "VNINDEX";
+            const dateQR = req.query.date || "";
+            const url = `https://msh-appdata.cafef.vn/rest-api/api/v1/MatchPrice?symbol=${symbol}&date=${dateQR}`;
+            const response = await axios.get(url);
+            res.json({code: 200, data: response.data});
+        }catch(err) {
+            res.json({code: 500, error: err});
+        }
+    },
+    dlLichSuCoDongNoiBo: async(req, res) => {
+        try {
+            const symbol = req.query.Symbol || "VNINDEX";
+            const StartDate = req.query.StartDate || "";
+            const EndDate = req.query.EndDate || "";
+            const PageIndex = req.query.PageIndex || 1;
+            const PageSize = req.query.PageSize || 20;
+            const url = `https://s.cafef.vn/Ajax/PageNew/DataHistory/GDCoDong.ashx?Symbol=${symbol}&StartDate=${StartDate}&EndDate=${EndDate}&PageIndex=${PageIndex}&PageSize=${PageSize}`;
+            const response = await axios.get(url);
+            res.json({code: 200, data: response.data});
+        }catch(err) {
+            res.json({code: 500, error: err});
+        }
+    },
+    //mục lấy về
+    tintucMoiCapNhat: async(req, res) => {
+        try {
+            const response = await axios.post("https://vietstock.vn/_Partials/NewsNewUpdatePaging", {"item":15,"row":1});
+            res.json({code: 200, data: response.data});
+        }catch(err) {
+            res.json({code: 500, error: err});
+        }
+    },
+    dulieuVimo: async(req, res) => {
+        try {
+            const response = await axios.post("https://finance.vietstock.vn/data/reportdatabydisplay?type=true")
+            res.json({code: 200, data: response});
+        }catch(err) {
+            res.json({code: 500, error: err});
+        }
     }
     
+
 }
 module.exports = vimoController;
