@@ -37,5 +37,13 @@ router.get("/du-lieu-lich-su/dien-bien-theo-phien", vimoController.dlLichSuDienB
 router.get("/du-lieu-lich-su/co-dong-noi-bo", vimoController.dlLichSuCoDongNoiBo);
 //vietstock
 router.get("/vietstock/moi-cap-nhat", vimoController.tintucMoiCapNhat);
-router.get("/vietstock/dulieu-vimo", vimoController.dulieuVimo)
+router.get("/vietstock/dulieu-vimo", vimoController.dulieuVimo);
+router.get("/vietstock/dulieu-tigia", vimoController.dulieuTiGia);
+router.get("/vietstock/thong-ke-gia", vimoController.thongKeGia);
+router.get("/vietstock/chi-so-nganh", vimoController.chisoNganh);
+router.get("/vietstock/ketqua-kinhdoanh", vimoController.ketquaKinhDoanh);
+router.get("/vietstock/macrooverviewchart", vimoController.macrooverviewchart);
+router.get("/vietstock/giao-dich-noi-bo", vimoController.giaodichNoiBo);
+router.get("/vietstock/KQGDThongKeGiaStockPaging", vimoController.thongkegia2);
+router.get("/vietstock/stocklist", vimoController.stockList);
 module.exports = router;

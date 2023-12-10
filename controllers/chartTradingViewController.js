@@ -226,7 +226,7 @@ const ChartTradingViewController = {
                 ranged = parseInt((toDate - fromDate) / 60);
             }
             if (symbol && (symbol == "VN30F1M" || symbol == "VN30F1Q" || symbol == "VN30F2M" || symbol == "VN30F2Q")) {
-                const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/derivative?from=${fromDate}&to=${toDate}&symbol=${symbol}&resolution=${resol}`;
+                const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/derivative?from=${fromDate}&to=${toDate}&symbol=${symbol}&resolution=${resolution}`;
                 const response = await axios.get(url);
                 let dataRP = response.data;
                 res.json({code: 200, data: dataRP});
