@@ -486,6 +486,8 @@ const vimoController = {
             const industryID = req.query.industryID || 0;
             const code = req.query.code || "";
             const order = req.query.order || "";
+            const page = req.query.page || 1;
+            const pageSize = req.query.pageSize || 20;
             const response = await axios({
                 method: "POST",
                 url: "https://finance.vietstock.vn/data/allkqkdorder",
@@ -498,7 +500,13 @@ const vimoController = {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.31'
                 },
             });
-            res.json({ code: 200, data: response.data });
+            let dataRP = [];
+            for (var i = (page - 1) * pageSize; i < page*pageSize; i++) {
+                if (response.data[i]) {
+                    dataRP.push(response.data[i]);
+                }
+            }
+            res.json({ code: 200, data: dataRP });
         }catch(err) {
             res.json({code: 500, error: err});
         }

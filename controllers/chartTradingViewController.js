@@ -204,8 +204,13 @@ const ChartTradingViewController = {
         try {
             const exchange = req.query.exchange;
             const symbol = req.query.symbol || "SSI";
-            const fromDate = req.query.from || 0;
-            const toDate = req.query.to || new Date().getTime();
+            let fromDate = req.query.from || 0;
+            let toDate = req.query.to || new Date().getTime();
+            if (toDate - fromDate < 76800) {
+                fromDate = toDate - 76800;
+                console.log("fromDate:: ", fromDate);
+                console.log("toDate:: ", toDate)
+            }
             let resol = "1";
             let ranged = parseInt((toDate - fromDate));
             const resolution = req.query.resolution || "D";
@@ -226,36 +231,55 @@ const ChartTradingViewController = {
                 ranged = parseInt((toDate - fromDate) / 60);
             }
             if (symbol && (symbol == "VN30F1M" || symbol == "VN30F1Q" || symbol == "VN30F2M" || symbol == "VN30F2Q")) {
-                const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/derivative?from=${fromDate}&to=${toDate}&symbol=${symbol}&resolution=${resolution}`;
+                const fromCustom = resol == "1" ? Math.round((new Date().getTime() - 15536000000)/1000) : fromDate;
+                const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/derivative?from=${fromCustom}&to=${toDate}&symbol=${symbol}&resolution=${resolution}`;
                 const response = await axios.get(url);
                 let dataRP = response.data;
                 res.json({code: 200, data: dataRP});
                 return;
 
             } else {
-                const client = new TradingView.Client();
-                const chart = new client.Session.Chart();
-                chart.setTimezone('Asia/Ho_Chi_Minh');
-                chart.setMarket(exchange + ":" + symbol, {
-                    timeframe: resol,
-                    to: toDate * 1000,
-                    from: fromDate * 1000,
-                    range: ranged
-                });
-                chart.onUpdate(async () => { // When price changes
-                    if (!chart.periods[0]) return;
-                    let data = chart.periods.reverse();
-                    res.json({ code: 200, data: data });
-                });
-                chart.onError((...err) => { // Listen for errors (can avoid crash)
-                    chart.setMarket(symbol, {
+                if (exchange == "HNX" || exchange == "HOSE" || exchange == "UPCOM") {
+                    const fromCustom = resol == "1" ? Math.round((new Date().getTime() - 15536000000)/1000) : fromDate;
+                    if (symbol == "VNINDEX") {
+                        const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/index?from=${fromCustom}&to=${toDate}&symbol=${symbol}&resolution=${resolution}`;
+                        const response = await axios.get(url);
+                        let dataRP = response.data;
+                        res.json({code: 200, data: dataRP});
+                    } else {
+                        const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/stock?from=${fromCustom}&to=${toDate}&symbol=${symbol}&resolution=${resolution}`;
+                        const response = await axios.get(url);
+                        let dataRP = response.data;
+                        res.json({code: 200, data: dataRP});
+                    }
+                    
+                    return;
+                } else {
+                    const client = new TradingView.Client();
+                    const chart = new client.Session.Chart();
+                    chart.setTimezone('Asia/Ho_Chi_Minh');
+                    chart.setMarket(exchange + ":" + symbol, {
                         timeframe: resol,
                         to: toDate * 1000,
                         from: fromDate * 1000,
                         range: ranged
                     });
-                    // Do something...
-                });
+                    chart.onUpdate(async () => { // When price changes
+                        if (!chart.periods[0]) return;
+                        let data = chart.periods.reverse();
+                        res.json({ code: 200, data: data });
+                    });
+                    chart.onError((...err) => { // Listen for errors (can avoid crash)
+                        chart.setMarket(symbol, {
+                            timeframe: resol,
+                            to: toDate * 1000,
+                            from: fromDate * 1000,
+                            range: ranged
+                        });
+                        // Do something...
+                    });
+                }
+                
             }
             
         } catch (err) {
