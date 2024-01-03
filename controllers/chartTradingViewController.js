@@ -202,15 +202,11 @@ const vn30 = [
 const ChartTradingViewController = {
     historyChart: async (req, res) => {
         try {
+            console.log("get history-----------------::: ", new Date());
             const exchange = req.query.exchange;
             const symbol = req.query.symbol || "SSI";
             let fromDate = req.query.from || 0;
             let toDate = req.query.to || new Date().getTime();
-            if (toDate - fromDate < 76800) {
-                fromDate = toDate - 76800;
-                console.log("fromDate:: ", fromDate);
-                console.log("toDate:: ", toDate)
-            }
             let resol = "1";
             let ranged = parseInt((toDate - fromDate));
             const resolution = req.query.resolution || "D";
@@ -252,31 +248,33 @@ const ChartTradingViewController = {
                         let dataRP = response.data;
                         res.json({code: 200, data: dataRP});
                     }
-                    
                     return;
                 } else {
-                    const client = new TradingView.Client();
-                    const chart = new client.Session.Chart();
+                    let client = new TradingView.Client();
+                    let chart = new client.Session.Chart();
                     chart.setTimezone('Asia/Ho_Chi_Minh');
-                    chart.setMarket(exchange + ":" + symbol, {
+                    chart.setMarket(symbol, {
                         timeframe: resol,
                         to: toDate * 1000,
                         from: fromDate * 1000,
                         range: ranged
                     });
                     chart.onUpdate(async () => { // When price changes
-                        if (!chart.periods[0]) return;
+                        if (!chart.periods[0]){
+                            res.json({ code: 200, data: [] });
+                            return;
+                        }
+                        console.log()
                         let data = chart.periods.reverse();
                         res.json({ code: 200, data: data });
+                        client = null;
+                        chart = null;
                     });
                     chart.onError((...err) => { // Listen for errors (can avoid crash)
-                        chart.setMarket(symbol, {
-                            timeframe: resol,
-                            to: toDate * 1000,
-                            from: fromDate * 1000,
-                            range: ranged
-                        });
-                        // Do something...
+                        console.log("chart histor error:: ", err);
+                        res.json({ code: 500, error: err });
+                        client = null;
+                        chart = null;
                     });
                 }
                 
@@ -331,6 +329,16 @@ const ChartTradingViewController = {
 
         } catch (err) {
             res.json({ code: 500, error: err });
+        }
+    },
+    getBotTemplate: async(req, res) => {
+        try {
+            const url = "https://smarttrading.vn/api/bot?act=stg_get&bid=2&name=template";
+            let response = await axios.get(url);
+            response.data.status = "ok";
+            res.json(response.data);
+        }catch(err) {
+            res.json({code: 500, error: err});
         }
     }
 }

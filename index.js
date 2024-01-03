@@ -61,9 +61,9 @@ server.listen(5001, () => {
         console.log("connect db success");
         io.on('connection', (socket) => {
 
-            const client = new TradingView.Client(); // Creates a websocket client
+            let client = new TradingView.Client(); // Creates a websocket client
 
-            const chart = new client.Session.Chart(); // Init a Chart session
+            let chart = new client.Session.Chart(); // Init a Chart session
             chart.setTimezone('Asia/Ho_Chi_Minh');
             chart.setMarket("VNINDEX", {
                 timeframe: "1",
@@ -71,7 +71,6 @@ server.listen(5001, () => {
             });
             chart.onError((...err) => { // Listen for errors (can avoid crash)
                 console.error('Chart error changeSymbol:', ...err);
-                // Do something...
             });
 
             chart.onSymbolLoaded(() => { // When the symbol is successfully loaded
@@ -79,33 +78,39 @@ server.listen(5001, () => {
             });
 
             chart.onUpdate(() => { // When price changes
-                if (!chart.periods[0]) return;
-                let data = chart.periods;
-                data[0].symbol = chart.infos.name;
-                if (chart.infos.depay) {
-                    data[0].time = data[0].time + chart.infos.depay;
+                try {
+                    console.log("chart index update");
+                    if (!chart.periods[0]) return;
+                    let data = chart.periods;
+                    data[0].symbol = chart.infos.name;
+                    if (chart.infos.depay) {
+                        data[0].time = data[0].time + chart.infos.depay;
+                    }
+                    socket.emit("onData", { chart: data[0], infos: chart.infos });
+                }catch(err) {
+                    console.log("update error:: ", err);
                 }
-                socket.emit("onData", { chart: data[0], infos: chart.infos });
+                
             });
             socket.on("changeSymbol", (data) => {
                 try {
-			console.log("changeSymbol");
+			        console.log("changeSymbol");
                     const toDate = new Date().getTime();
                     if (data.symbolInfo.type == "forex") {
                         chart.setMarket(data.symbolInfo.name, {
                             timeframe: "1",
                             to: toDate * 1000,
-                            range: 100
+                            range: 5000
                         });
                     } else {
                         chart.setMarket(data.symbolInfo.exchange + ":" + data.symbolInfo.name, {
                             timeframe: "1",
                             to: toDate * 1000,
-                            range: 100
+                            range: 5000
                         });
                     }
                 } catch (err) {
-                    console.log("changeSymbol", err);
+                    console.log("changeSymbol error:: ", err);
                 }
 
             })
