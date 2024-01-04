@@ -56,11 +56,14 @@ const io = new Server(server);
 
 // trading view api
 const TradingView = require("@mathieuc/tradingview");
+let totalOnline = 0;
 server.listen(5001, () => {
     mongoose.connect(dbUrl, connectionParams).then(() => {
         console.log("connect db success");
         io.on('connection', (socket) => {
-
+            console.log("client:: ", socket.id);
+            totalOnline++;
+            console.log("connection + 1, totalOnline:: ", totalOnline);
             let client = new TradingView.Client(); // Creates a websocket client
 
             let chart = new client.Session.Chart(); // Init a Chart session
@@ -79,8 +82,8 @@ server.listen(5001, () => {
 
             chart.onUpdate(() => { // When price changes
                 try {
-                    console.log("chart index update");
-                    if (!chart.periods[0]) return;
+                    if (!chart || !chart.periods[0]) return;
+                    console.log("chart index update:: ", chart.infos.description);
                     let data = chart.periods;
                     data[0].symbol = chart.infos.name;
                     if (chart.infos.depay) {
@@ -94,7 +97,7 @@ server.listen(5001, () => {
             });
             socket.on("changeSymbol", (data) => {
                 try {
-			        console.log("changeSymbol");
+			        console.log("changeSymbol:: ", data.symbolInfo.name);
                     const toDate = new Date().getTime();
                     if (data.symbolInfo.type == "forex") {
                         chart.setMarket(data.symbolInfo.name, {
@@ -114,6 +117,11 @@ server.listen(5001, () => {
                 }
 
             })
+            socket.on("disconnect", () => {
+                totalOnline--;
+                console.log("disconnect - 1, totalOnline:: ", totalOnline);
+                client.end();
+            });
         });
     }).catch((e) => {
         console.log("connect db error:: ", e);

@@ -202,7 +202,7 @@ const vn30 = [
 const ChartTradingViewController = {
     historyChart: async (req, res) => {
         try {
-            console.log("get history-----------------::: ", new Date());
+            console.log("get history "+req.query.symbol+ " -----------------::: " + new Date());
             const exchange = req.query.exchange;
             const symbol = req.query.symbol || "SSI";
             let fromDate = req.query.from || 0;
@@ -262,19 +262,18 @@ const ChartTradingViewController = {
                     chart.onUpdate(async () => { // When price changes
                         if (!chart.periods[0]){
                             res.json({ code: 200, data: [] });
+                            client.end();
                             return;
                         }
                         console.log()
                         let data = chart.periods.reverse();
                         res.json({ code: 200, data: data });
-                        client = null;
-                        chart = null;
+                        client.end();
                     });
                     chart.onError((...err) => { // Listen for errors (can avoid crash)
                         console.log("chart histor error:: ", err);
                         res.json({ code: 500, error: err });
-                        client = null;
-                        chart = null;
+                        client.end();
                     });
                 }
                 
