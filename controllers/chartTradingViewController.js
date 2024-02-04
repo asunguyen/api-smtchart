@@ -1,4 +1,8 @@
 const TradingView = require("@mathieuc/tradingview");
+const authMiddl = require("../middlewares/authmidd");
+const ChartTemplateMD = require("../models/chartTemplateModel");
+const formidable = require('formidable');
+
 const axios = require('axios');
 const vn30 = [
     // {
@@ -368,7 +372,7 @@ const ChartTradingViewController = {
 
         } catch (err) {
             res.json({ code: 200, data: [] });
-           console.log("history error:: ", err);
+            console.log("history error:: ", err);
         }
     },
     searchSymbol: async (req, res) => {
@@ -427,7 +431,574 @@ const ChartTradingViewController = {
         } catch (err) {
             res.json({ code: 500, error: err });
         }
-    }
+    },
+    //dashboard
+    saveChartDashboard: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const counter = await ChartTemplateMD.countDocuments();
+            const chart = req.query.chart;
+            const form = new formidable.IncomingForm();//({ multiples: true });
+            if (!chart) {
+                form.parse(req, async (err, fields, files) => {
+                    const newChart = await new ChartTemplateMD({
+                        userID: userID,
+                        name: fields.name[0],
+                        content: fields.content[0],
+                        page: "dashboard",
+                        idcustom: counter + 1000
+                    }).save();
+                    res.json({
+                        status: "ok",
+                        id: newChart.idcustom
+                    })
+                })
+                
+            } else {
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "dashboard", idcustom:chart });
+                form.parse(req, async (err, fields, files) => {
+                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                        name: fields.name[0],
+                        content: fields.content[0],
+                    });
+                    res.json({
+                        status: "ok",
+                        id: updateChart.idcustom
+                    })
+                });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi save chart" });
+        }
+    },
+    getChartDashboard: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const chartTp = await ChartTemplateMD.find({ userID: userID, page: "dashboard" });
+            if (chartTp && chartTp[0]) {
+                const chart = req.query.chart;
+                if (!chart) {
+                    let data = [];
+                    for (var i = 0; i < chartTp.length; i++) {
+                        let contentpars = JSON.parse(chartTp[i].content);
+                        let item = {
+                            id: chartTp[i].idcustom,
+                            name: chartTp[i].name,
+                            timestamp: parseInt((new Date().getTime()) / 1000),
+                            resolution: contentpars.resolution,
+                            symbol: contentpars.symbol
+                        }
+                        data.push(item);
+                    }
+                    res.json({status: "ok", data: data})
+                } else {
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "dashboard", idcustom:chart });
+                    res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
+                }
+            } else {
+                res.json({ code: 404, error: "lỗi load chart dashboard" });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi load chart dashboard" });
+        }
+    },
+    //pt1m
+    saveChartpt1m: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const counter = await ChartTemplateMD.countDocuments();
+            const chart = req.query.chart;
+            const form = new formidable.IncomingForm();//({ multiples: true });
+            if (!chart) {
+                form.parse(req, async (err, fields, files) => {
+                    const newChart = await new ChartTemplateMD({
+                        userID: userID,
+                        name: fields.name[0],
+                        content: fields.content[0],
+                        page: "pt1m",
+                        idcustom: counter + 1000
+                    }).save();
+                    res.json({
+                        status: "ok",
+                        id: newChart.idcustom
+                    })
+                })
+                
+            } else {
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt1m", idcustom:chart });
+                form.parse(req, async (err, fields, files) => {
+                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                        name: fields.name[0],
+                        content: fields.content[0],
+                    });
+                    res.json({
+                        status: "ok",
+                        id: updateChart.idcustom
+                    })
+                });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi save chart pt1m" });
+        }
+    },
+    getChartpt1m: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt1m" });
+            if (chartTp && chartTp[0]) {
+                const chart = req.query.chart;
+                if (!chart) {
+                    
+                    let data = [];
+                    for (var i = 0; i < chartTp.length; i++) {
+                        let contentpars = JSON.parse(chartTp[i].content);
+                        let item = {
+                            id: chartTp[i].idcustom,
+                            name: chartTp[i].name,
+                            timestamp: parseInt((new Date().getTime()) / 1000),
+                            resolution: contentpars.resolution,
+                            symbol: contentpars.symbol
+                        }
+                        data.push(item);
+                    }
+                    res.json({status: "ok", data: data})
+                } else {
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "pt1m", idcustom:chart });
+                    res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
+                }
+            } else {
+                res.json({ code: 404, error: "lỗi load chart pt1m" });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi load chart pt1m" });
+        }
+    },
+    //ai
+    saveChartai: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const counter = await ChartTemplateMD.countDocuments();
+            const chart = req.query.chart;
+            const form = new formidable.IncomingForm();//({ multiples: true });
+            if (!chart) {
+                form.parse(req, async (err, fields, files) => {
+                    const newChart = await new ChartTemplateMD({
+                        userID: userID,
+                        name: fields.name[0],
+                        content: fields.content[0],
+                        page: "ai",
+                        idcustom: counter + 1000
+                    }).save();
+                    res.json({
+                        status: "ok",
+                        id: newChart.idcustom
+                    })
+                })
+                
+            } else {
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "ai", idcustom:chart });
+                form.parse(req, async (err, fields, files) => {
+                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                        name: fields.name[0],
+                        content: fields.content[0],
+                    });
+                    res.json({
+                        status: "ok",
+                        id: updateChart.idcustom
+                    })
+                });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi save chart ai" });
+        }
+    },
+    getChartai: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const chartTp = await ChartTemplateMD.find({ userID: userID, page: "ai" });
+            if (chartTp && chartTp[0]) {
+                const chart = req.query.chart;
+                if (!chart) {
+                    
+                    let data = [];
+                    for (var i = 0; i < chartTp.length; i++) {
+                        let contentpars = JSON.parse(chartTp[i].content);
+                        let item = {
+                            id: chartTp[i].idcustom,
+                            name: chartTp[i].name,
+                            timestamp: parseInt((new Date().getTime()) / 1000),
+                            resolution: contentpars.resolution,
+                            symbol: contentpars.symbol
+                        }
+                        data.push(item);
+                    }
+                    res.json({status: "ok", data: data})
+                } else {
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "ai", idcustom:chart });
+                    res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
+                }
+            } else {
+                res.json({ code: 404, error: "lỗi load chart ai" });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi load chart ai" });
+        }
+    },
+    //pttrend
+    saveChartpttrend: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const counter = await ChartTemplateMD.countDocuments();
+            const chart = req.query.chart;
+            const form = new formidable.IncomingForm();//({ multiples: true });
+            if (!chart) {
+                form.parse(req, async (err, fields, files) => {
+                    const newChart = await new ChartTemplateMD({
+                        userID: userID,
+                        name: fields.name[0],
+                        content: fields.content[0],
+                        page: "pttrend",
+                        idcustom: counter + 1000
+                    }).save();
+                    res.json({
+                        status: "ok",
+                        id: newChart.idcustom
+                    })
+                })
+                
+            } else {
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pttrend", idcustom:chart });
+                form.parse(req, async (err, fields, files) => {
+                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                        name: fields.name[0],
+                        content: fields.content[0],
+                    });
+                    res.json({
+                        status: "ok",
+                        id: updateChart.idcustom
+                    })
+                });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi save chart pttrend" });
+        }
+    },
+    getChartpttrend: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pttrend" });
+            if (chartTp && chartTp[0]) {
+                const chart = req.query.chart;
+                if (!chart) {
+                    
+                    let data = [];
+                    for (var i = 0; i < chartTp.length; i++) {
+                        let contentpars = JSON.parse(chartTp[i].content);
+                        let item = {
+                            id: chartTp[i].idcustom,
+                            name: chartTp[i].name,
+                            timestamp: parseInt((new Date().getTime()) / 1000),
+                            resolution: contentpars.resolution,
+                            symbol: contentpars.symbol
+                        }
+                        data.push(item);
+                    }
+                    res.json({status: "ok", data: data})
+                } else {
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "pttrend", idcustom:chart });
+                    res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
+                }
+            } else {
+                res.json({ code: 404, error: "lỗi load chart pttrend" });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi load chart pttrend" });
+        }
+    },
+    //pt3m
+    saveChart_pt3m: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const counter = await ChartTemplateMD.countDocuments();
+            const chart = req.query.chart;
+            const form = new formidable.IncomingForm();//({ multiples: true });
+            if (!chart) {
+                form.parse(req, async (err, fields, files) => {
+                    const newChart = await new ChartTemplateMD({
+                        userID: userID,
+                        name: fields.name[0],
+                        content: fields.content[0],
+                        page: "pt3m",
+                        idcustom: counter + 1000
+                    }).save();
+                    res.json({
+                        status: "ok",
+                        id: newChart.idcustom
+                    })
+                })
+                
+            } else {
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt3m", idcustom:chart });
+                form.parse(req, async (err, fields, files) => {
+                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                        name: fields.name[0],
+                        content: fields.content[0],
+                    });
+                    res.json({
+                        status: "ok",
+                        id: updateChart.idcustom
+                    })
+                });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi save chart pt3m" });
+        }
+    },
+    getChart_pt3m: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt3m" });
+            if (chartTp && chartTp[0]) {
+                const chart = req.query.chart;
+                if (!chart) {
+                    
+                    let data = [];
+                    for (var i = 0; i < chartTp.length; i++) {
+                        let contentpars = JSON.parse(chartTp[i].content);
+                        let item = {
+                            id: chartTp[i].idcustom,
+                            name: chartTp[i].name,
+                            timestamp: parseInt((new Date().getTime()) / 1000),
+                            resolution: contentpars.resolution,
+                            symbol: contentpars.symbol
+                        }
+                        data.push(item);
+                    }
+                    res.json({status: "ok", data: data})
+                } else {
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "pt3m", idcustom:chart });
+                    res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
+                }
+            } else {
+                res.json({ code: 404, error: "lỗi load chart pt3m" });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi load chart pt3m" });
+        }
+    },
+    //csfree
+    saveChart_csfree: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const counter = await ChartTemplateMD.countDocuments();
+            const chart = req.query.chart;
+            const form = new formidable.IncomingForm();//({ multiples: true });
+            if (!chart) {
+                form.parse(req, async (err, fields, files) => {
+                    const newChart = await new ChartTemplateMD({
+                        userID: userID,
+                        name: fields.name[0],
+                        content: fields.content[0],
+                        page: "csfree",
+                        idcustom: counter + 1000
+                    }).save();
+                    res.json({
+                        status: "ok",
+                        id: newChart.idcustom
+                    })
+                })
+                
+            } else {
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "csfree", idcustom:chart });
+                form.parse(req, async (err, fields, files) => {
+                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                        name: fields.name[0],
+                        content: fields.content[0],
+                    });
+                    res.json({
+                        status: "ok",
+                        id: updateChart.idcustom
+                    })
+                });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi save chart csfree" });
+        }
+    },
+    getChart_csfree: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const chartTp = await ChartTemplateMD.find({ userID: userID, page: "csfree" });
+            if (chartTp && chartTp[0]) {
+                const chart = req.query.chart;
+                if (!chart) {
+                    
+                    let data = [];
+                    for (var i = 0; i < chartTp.length; i++) {
+                        let contentpars = JSON.parse(chartTp[i].content);
+                        let item = {
+                            id: chartTp[i].idcustom,
+                            name: chartTp[i].name,
+                            timestamp: parseInt((new Date().getTime()) / 1000),
+                            resolution: contentpars.resolution,
+                            symbol: contentpars.symbol
+                        }
+                        data.push(item);
+                    }
+                    res.json({status: "ok", data: data})
+                } else {
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "csfree", idcustom:chart });
+                    res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
+                }
+            } else {
+                res.json({ code: 404, error: "lỗi load chart csfree" });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi load chart csfree" });
+        }
+    },
+    //cstplus
+    saveChart_cstplus: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const counter = await ChartTemplateMD.countDocuments();
+            const chart = req.query.chart;
+            const form = new formidable.IncomingForm();//({ multiples: true });
+            if (!chart) {
+                form.parse(req, async (err, fields, files) => {
+                    const newChart = await new ChartTemplateMD({
+                        userID: userID,
+                        name: fields.name[0],
+                        content: fields.content[0],
+                        page: "cstplus",
+                        idcustom: counter + 1000
+                    }).save();
+                    res.json({
+                        status: "ok",
+                        id: newChart.idcustom
+                    })
+                })
+                
+            } else {
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstplus", idcustom:chart });
+                form.parse(req, async (err, fields, files) => {
+                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                        name: fields.name[0],
+                        content: fields.content[0],
+                    });
+                    res.json({
+                        status: "ok",
+                        id: updateChart.idcustom
+                    })
+                });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi save chart cstplus" });
+        }
+    },
+    getChart_cstplus: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstplus" });
+            if (chartTp && chartTp[0]) {
+                const chart = req.query.chart;
+                if (!chart) {
+                    
+                    let data = [];
+                    for (var i = 0; i < chartTp.length; i++) {
+                        let contentpars = JSON.parse(chartTp[i].content);
+                        let item = {
+                            id: chartTp[i].idcustom,
+                            name: chartTp[i].name,
+                            timestamp: parseInt((new Date().getTime()) / 1000),
+                            resolution: contentpars.resolution,
+                            symbol: contentpars.symbol
+                        }
+                        data.push(item);
+                    }
+                    res.json({status: "ok", data: data})
+                } else {
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "cstplus", idcustom:chart });
+                    res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
+                }
+            } else {
+                res.json({ code: 404, error: "lỗi load chart cstplus" });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi load chart cstplus" });
+        }
+    },
+    //cstrend
+    saveChart_cstrend: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const counter = await ChartTemplateMD.countDocuments();
+            const chart = req.query.chart;
+            const form = new formidable.IncomingForm();//({ multiples: true });
+            if (!chart) {
+                form.parse(req, async (err, fields, files) => {
+                    const newChart = await new ChartTemplateMD({
+                        userID: userID,
+                        name: fields.name[0],
+                        content: fields.content[0],
+                        page: "cstrend",
+                        idcustom: counter + 1000
+                    }).save();
+                    res.json({
+                        status: "ok",
+                        id: newChart.idcustom
+                    })
+                })
+                
+            } else {
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstrend", idcustom:chart });
+                form.parse(req, async (err, fields, files) => {
+                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                        name: fields.name[0],
+                        content: fields.content[0],
+                    });
+                    res.json({
+                        status: "ok",
+                        id: updateChart.idcustom
+                    })
+                });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi save chart cstrend" });
+        }
+    },
+    getChart_cstrend: async (req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstrend" });
+            if (chartTp && chartTp[0]) {
+                const chart = req.query.chart;
+                if (!chart) {
+                    
+                    let data = [];
+                    for (var i = 0; i < chartTp.length; i++) {
+                        let contentpars = JSON.parse(chartTp[i].content);
+                        let item = {
+                            id: chartTp[i].idcustom,
+                            name: chartTp[i].name,
+                            timestamp: parseInt((new Date().getTime()) / 1000),
+                            resolution: contentpars.resolution,
+                            symbol: contentpars.symbol
+                        }
+                        data.push(item);
+                    }
+                    res.json({status: "ok", data: data})
+                } else {
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "cstrend", idcustom:chart });
+                    res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
+                }
+            } else {
+                res.json({ code: 404, error: "lỗi load chart cstrend" });
+            }
+        } catch (err) {
+            res.json({ code: 500, error: "lỗi load chart cstrend" });
+        }
+    },
 }
 module.exports = ChartTradingViewController;
 
