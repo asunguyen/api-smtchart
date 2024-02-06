@@ -469,16 +469,23 @@ const ChartTradingViewController = {
                 
             } else {
                 const chartTp = await ChartTemplateMD.find({ userID: userID, page: "dashboard", idcustom:chart });
-                form.parse(req, async (err, fields, files) => {
-                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
-                        name: fields.name[0],
-                        content: fields.content[0],
+                if (chartTp && chartTp[0]) {
+                    form.parse(req, async (err, fields, files) => {
+                        const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                            name: fields.name[0],
+                            content: fields.content[0],
+                        });
+                        res.json({
+                            status: "ok",
+                            id: updateChart.idcustom
+                        })
                     });
+                }else {
                     res.json({
                         status: "ok",
-                        id: updateChart.idcustom
+                        id: 0
                     })
-                });
+                }
             }
         } catch (err) {
             res.json({ code: 500, error: "lỗi save chart" });
@@ -539,16 +546,23 @@ const ChartTradingViewController = {
                 
             } else {
                 const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt1m", idcustom:chart });
-                form.parse(req, async (err, fields, files) => {
-                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
-                        name: fields.name[0],
-                        content: fields.content[0],
+                if (chartTp && chartTp[0]) {
+                    form.parse(req, async (err, fields, files) => {
+                        const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                            name: fields.name[0],
+                            content: fields.content[0],
+                        });
+                        res.json({
+                            status: "ok",
+                            id: updateChart.idcustom
+                        })
                     });
+                }else {
                     res.json({
                         status: "ok",
-                        id: updateChart.idcustom
+                        id: 0
                     })
-                });
+                }
             }
         } catch (err) {
             res.json({ code: 500, error: "lỗi save chart pt1m" });
@@ -610,16 +624,23 @@ const ChartTradingViewController = {
                 
             } else {
                 const chartTp = await ChartTemplateMD.find({ userID: userID, page: "ai", idcustom:chart });
-                form.parse(req, async (err, fields, files) => {
-                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
-                        name: fields.name[0],
-                        content: fields.content[0],
+                if (chartTp && chartTp[0]) {
+                    form.parse(req, async (err, fields, files) => {
+                        const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                            name: fields.name[0],
+                            content: fields.content[0],
+                        });
+                        res.json({
+                            status: "ok",
+                            id: updateChart.idcustom
+                        })
                     });
+                }else {
                     res.json({
                         status: "ok",
-                        id: updateChart.idcustom
+                        id: 0
                     })
-                });
+                }
             }
         } catch (err) {
             res.json({ code: 500, error: "lỗi save chart ai" });
@@ -681,16 +702,23 @@ const ChartTradingViewController = {
                 
             } else {
                 const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pttrend", idcustom:chart });
-                form.parse(req, async (err, fields, files) => {
-                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
-                        name: fields.name[0],
-                        content: fields.content[0],
+                if (chartTp && chartTp[0]) {
+                    form.parse(req, async (err, fields, files) => {
+                        const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                            name: fields.name[0],
+                            content: fields.content[0],
+                        });
+                        res.json({
+                            status: "ok",
+                            id: updateChart.idcustom
+                        })
                     });
+                }else {
                     res.json({
                         status: "ok",
-                        id: updateChart.idcustom
+                        id: 0
                     })
-                });
+                }
             }
         } catch (err) {
             res.json({ code: 500, error: "lỗi save chart pttrend" });
@@ -752,16 +780,23 @@ const ChartTradingViewController = {
                 
             } else {
                 const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt3m", idcustom:chart });
-                form.parse(req, async (err, fields, files) => {
-                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
-                        name: fields.name[0],
-                        content: fields.content[0],
+                if (chartTp && chartTp[0]) {
+                    form.parse(req, async (err, fields, files) => {
+                        const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                            name: fields.name[0],
+                            content: fields.content[0],
+                        });
+                        res.json({
+                            status: "ok",
+                            id: updateChart.idcustom
+                        })
                     });
+                }else {
                     res.json({
                         status: "ok",
-                        id: updateChart.idcustom
+                        id: 0
                     })
-                });
+                }
             }
         } catch (err) {
             res.json({ code: 500, error: "lỗi save chart pt3m" });
@@ -823,16 +858,23 @@ const ChartTradingViewController = {
                 
             } else {
                 const chartTp = await ChartTemplateMD.find({ userID: userID, page: "csfree", idcustom:chart });
-                form.parse(req, async (err, fields, files) => {
-                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
-                        name: fields.name[0],
-                        content: fields.content[0],
+                if (chartTp && chartTp[0]) {
+                    form.parse(req, async (err, fields, files) => {
+                        const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                            name: fields.name[0],
+                            content: fields.content[0],
+                        });
+                        res.json({
+                            status: "ok",
+                            id: updateChart.idcustom
+                        })
                     });
+                }else {
                     res.json({
                         status: "ok",
-                        id: updateChart.idcustom
+                        id: 0
                     })
-                });
+                }
             }
         } catch (err) {
             res.json({ code: 500, error: "lỗi save chart csfree" });
@@ -894,16 +936,24 @@ const ChartTradingViewController = {
                 
             } else {
                 const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstplus", idcustom:chart });
-                form.parse(req, async (err, fields, files) => {
-                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
-                        name: fields.name[0],
-                        content: fields.content[0],
+                if (chartTp && chartTp[0]) {
+                    form.parse(req, async (err, fields, files) => {
+                        const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                            name: fields.name[0],
+                            content: fields.content[0],
+                        });
+                        res.json({
+                            status: "ok",
+                            id: updateChart.idcustom
+                        })
                     });
+                }else {
                     res.json({
                         status: "ok",
-                        id: updateChart.idcustom
+                        id: 0
                     })
-                });
+                }
+                
             }
         } catch (err) {
             res.json({ code: 500, error: "lỗi save chart cstplus" });
@@ -965,16 +1015,23 @@ const ChartTradingViewController = {
                 
             } else {
                 const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstrend", idcustom:chart });
-                form.parse(req, async (err, fields, files) => {
-                    const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
-                        name: fields.name[0],
-                        content: fields.content[0],
+                if (chartTp && chartTp[0]) {
+                    form.parse(req, async (err, fields, files) => {
+                        const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
+                            name: fields.name[0],
+                            content: fields.content[0],
+                        });
+                        res.json({
+                            status: "ok",
+                            id: updateChart.idcustom
+                        })
                     });
+                }else {
                     res.json({
                         status: "ok",
-                        id: updateChart.idcustom
+                        id: 0
                     })
-                });
+                }
             }
         } catch (err) {
             res.json({ code: 500, error: "lỗi save chart cstrend" });
