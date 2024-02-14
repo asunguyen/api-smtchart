@@ -11,8 +11,9 @@ const publicRouter = require("./routers/public");
 const licenseRouter = require("./routers/licensekeyRouter");
 const vimoRouter = require("./routers/vimoRouter");
 const tradingViewRouter = require("./routers/tradingViewRouter");
+const fs = require("fs");
 
-const { createServer } = require('node:http');
+const { createServer } = require('node:https');
 const { Server } = require('socket.io');
 
 dotenv.config();
@@ -25,6 +26,8 @@ app.use(cookieParser());
 //file tĩnh
 app.use("/public", express.static(path.join(__dirname, "/public")));
 //router api
+
+
 
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
@@ -48,8 +51,10 @@ const connectionParams = {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }
-
-const server = createServer(app);
+const server = createServer({
+    key: fs.readFileSync(path.join(__dirname, "/public", "apichartkey.key") ),
+    cert: fs.readFileSync(path.join(__dirname, "/public", "apichart.pem") ),
+}, app);
 const io = new Server(server);
 
 
@@ -90,14 +95,14 @@ server.listen(5001, () => {
                         data[0].time = data[0].time + chart.infos.depay;
                     }
                     socket.emit("onData", { chart: data[0], infos: chart.infos });
-                }catch(err) {
+                } catch (err) {
                     console.log("update error:: ", err);
                 }
-                
+
             });
             socket.on("changeSymbol", (data) => {
                 try {
-			        console.log("changeSymbol:: ", data.symbolInfo.name);
+                    console.log("changeSymbol:: ", data.symbolInfo.name);
                     const toDate = new Date().getTime();
                     if (data.symbolInfo.type == "forex") {
                         chart.setMarket(data.symbolInfo.name, {
