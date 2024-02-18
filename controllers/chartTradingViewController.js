@@ -341,17 +341,17 @@ const ChartTradingViewController = {
                             if (!chart.periods[0]) {
                                 res.json({ code: 200, data: [] });
                                 client.end();
-                                return;
                             }
-                            console.log()
                             let data = chart.periods.reverse();
                             res.json({ code: 200, data: data });
                             client.end();
+                            return;
                         });
                         chart.onError((...err) => { // Listen for errors (can avoid crash)
                             console.log("chart histor error:: ", err);
                             res.json({ code: 500, error: err });
                             client.end();
+                            return;
                         });
                     }
                     // let client = new TradingView.Client();
