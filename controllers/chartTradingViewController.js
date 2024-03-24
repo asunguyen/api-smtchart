@@ -1069,6 +1069,16 @@ const ChartTradingViewController = {
             res.json({ code: 500, error: "lỗi load chart cstrend" });
         }
     },
+    deleteChart: async(req, res) => {
+        try {
+            const userID = req.query.user.split("_")[0];
+            const chartID = req.query.chart;
+            const chartTp = await ChartTemplateMD.findOneAndDelete({ userID: userID, idcustom: chartID});
+            res.json({code: 200, data: chartTp});
+        }catch(err) {
+            res.json({code: 500, error: "Lỗi xóa chart"});
+        }
+    }
 }
 module.exports = ChartTradingViewController;
 

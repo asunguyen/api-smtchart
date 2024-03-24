@@ -29,5 +29,8 @@ router.get("/csfree/1.1/charts", ChartTradingViewController.getChart_pt3m);
 router.get("/cstplus/1.1/charts", ChartTradingViewController.getChart_cstplus);
 router.get("/cstrend/1.1/charts", ChartTradingViewController.getChart_cstrend);
 
+//delete chart
+router.delete("/dashboard/1.1/charts", ChartTradingViewController.deleteChart);
+
 
 module.exports = router;
