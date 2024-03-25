@@ -11,6 +11,7 @@ const publicRouter = require("./routers/public");
 const licenseRouter = require("./routers/licensekeyRouter");
 const vimoRouter = require("./routers/vimoRouter");
 const tradingViewRouter = require("./routers/tradingViewRouter");
+const bolocCophieuRouter = require("./routers/bolocCophieuRouter");
 const fs = require("fs");
 
 const { createServer } = require('node:https');
@@ -35,6 +36,7 @@ app.use("/v1/chart", publicRouter);
 app.use("/v1/data", tradingViewRouter)
 app.use("/v1/license", licenseRouter);
 app.use("/v1/vimo", vimoRouter);
+app.use("/v1/boloc", bolocCophieuRouter);
 
 //router client
 app.set("view engine", "ejs");
