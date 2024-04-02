@@ -105,16 +105,26 @@ server.listen(5001, () => {
             socket.on("changeSymbol", (data) => {
                 try {
                     console.log("changeSymbol:: ", data.symbolInfo.name);
+                    let resol = "1";
+                    if (data.symbolInfo.resolution.search("D") >= 0) {
+                        resol = "D"
+                    }
+                    if (data.symbolInfo.resolution.search("W") >= 0) {
+                        resol = "W"
+                    }
+                    if (data.symbolInfo.resolution.search("M") >= 0) {
+                        resol = "M"
+                    }
                     const toDate = new Date().getTime();
                     if (data.symbolInfo.type == "forex") {
                         chart.setMarket(data.symbolInfo.name, {
-                            timeframe: "1",
+                            timeframe: resol,
                             to: toDate * 1000,
                             range: 5000
                         });
                     } else {
                         chart.setMarket(data.symbolInfo.exchange + ":" + data.symbolInfo.name, {
-                            timeframe: "1",
+                            timeframe: resol,
                             to: toDate * 1000,
                             range: 5000
                         });
