@@ -12,6 +12,8 @@ const licenseRouter = require("./routers/licensekeyRouter");
 const vimoRouter = require("./routers/vimoRouter");
 const tradingViewRouter = require("./routers/tradingViewRouter");
 const bolocCophieuRouter = require("./routers/bolocCophieuRouter");
+const orderRouter = require("./routers/orderRouter");
+
 const fs = require("fs");
 
 const { createServer } = require('node:https');
@@ -37,6 +39,7 @@ app.use("/v1/data", tradingViewRouter)
 app.use("/v1/license", licenseRouter);
 app.use("/v1/vimo", vimoRouter);
 app.use("/v1/boloc", bolocCophieuRouter);
+app.use("/v1/order", orderRouter);
 
 //router client
 app.set("view engine", "ejs");
@@ -67,26 +70,24 @@ let totalOnline = 0;
 server.listen(5001, () => {
     mongoose.connect(dbUrl, connectionParams).then(() => {
         console.log("connect db success");
+        let client = new TradingView.Client(); // Creates a websocket client
+        let chart = new client.Session.Chart(); // Init a Chart session
+        chart.setTimezone('Asia/Ho_Chi_Minh');
+        chart.setMarket("SSI", {
+            timeframe: "1",
+            range: 20
+        });
+        chart.onError((...err) => { // Listen for errors (can avoid crash)
+            console.error('Chart error changeSymbol:', ...err);
+        });
+
+        chart.onSymbolLoaded(() => { // When the symbol is successfully loaded
+            console.log(`Market "${chart.infos.description}" loaded !`);
+        });
         io.on('connection', (socket) => {
             console.log("client:: ", socket.id);
             totalOnline++;
             console.log("connection + 1, totalOnline:: ", totalOnline);
-            let client = new TradingView.Client(); // Creates a websocket client
-
-            let chart = new client.Session.Chart(); // Init a Chart session
-            chart.setTimezone('Asia/Ho_Chi_Minh');
-            chart.setMarket("VNINDEX", {
-                timeframe: "1",
-                range: 20
-            });
-            chart.onError((...err) => { // Listen for errors (can avoid crash)
-                console.error('Chart error changeSymbol:', ...err);
-            });
-
-            chart.onSymbolLoaded(() => { // When the symbol is successfully loaded
-                console.log(`Market "${chart.infos.description}" loaded !`);
-            });
-
             chart.onUpdate(() => { // When price changes
                 try {
                     if (!chart || !chart.periods[0]) return;
