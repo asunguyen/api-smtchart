@@ -270,46 +270,20 @@ const ChartTradingViewController = {
                                 volume: d[5]
                             }))
                             res.json({ code: 200, data: dataR });
-                            // tradingview coin
-                            // let client = new TradingView.Client();
-                            // let chart = new client.Session.Chart();
-                            // chart.setTimezone('Asia/Ho_Chi_Minh');
-                            // chart.setMarket(symbol, {
-                            //     timeframe: resol,
-                            //     to: toDate * 1000,
-                            //     from: fromDate * 1000,
-                            //     range: 100000
-                            // });
-                            // chart.onUpdate(async () => { // When price changes
-                            //     if (!chart.periods[0]) {
-                            //         res.json({ code: 200, data: [] });
-                            //         client.end();
-                            //         return;
-                            //     }
-                            //     console.log()
-                            //     let data = chart.periods.reverse();
-                            //     res.json({ code: 200, data: data });
-                            //     client.end();
-                            // });
-                            // chart.onError((...err) => { // Listen for errors (can avoid crash)
-                            //     console.log("chart histor error:: ", err);
-                            //     res.json({ code: 500, error: err });
-                            //     client.end();
-                            // });
                         } else {
-                            switch(symbol) {
+                            switch (symbol) {
                                 case "SP500":
                                     symbol = "SPX";
-                                break;
+                                    break;
                                 case "US30":
                                     symbol = "YM";
-                                break;
+                                    break;
                                 case "US100":
                                     symbol = "NQ";
-                                break;
+                                    break;
                                 case "SXP500":
                                     symbol = "SXP";
-                                break;
+                                    break;
                             }
                             const url = `https://my.litefinance.vn/vi/chart/get-history?symbol=${symbol}&resolution=1&from=${fromDate}&to=${toDate}`;
                             const response = await axios.get(url);
@@ -354,31 +328,6 @@ const ChartTradingViewController = {
                             return;
                         });
                     }
-                    // let client = new TradingView.Client();
-                    //     let chart = new client.Session.Chart();
-                    //     chart.setTimezone('Asia/Ho_Chi_Minh');
-                    //     chart.setMarket(symbol, {
-                    //         timeframe: resol,
-                    //         to: toDate * 1000,
-                    //         from: fromDate * 1000,
-                    //         range: ranged
-                    //     });
-                    //     chart.onUpdate(async () => { // When price changes
-                    //         if (!chart.periods[0]){
-                    //             res.json({ code: 200, data: [] });
-                    //             client.end();
-                    //             return;
-                    //         }
-                    //         console.log()
-                    //         let data = chart.periods.reverse();
-                    //         res.json({ code: 200, data: data });
-                    //         client.end();
-                    //     });
-                    //     chart.onError((...err) => { // Listen for errors (can avoid crash)
-                    //         console.log("chart histor error:: ", err);
-                    //         res.json({ code: 500, error: err });
-                    //         client.end();
-                    //     });
                 }
 
             }
@@ -466,9 +415,9 @@ const ChartTradingViewController = {
                         id: newChart.idcustom
                     })
                 })
-                
+
             } else {
-                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "dashboard", idcustom:chart });
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "dashboard", idcustom: chart });
                 if (chartTp && chartTp[0]) {
                     form.parse(req, async (err, fields, files) => {
                         const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
@@ -480,7 +429,7 @@ const ChartTradingViewController = {
                             id: updateChart.idcustom
                         })
                     });
-                }else {
+                } else {
                     res.json({
                         status: "ok",
                         id: 0
@@ -510,9 +459,9 @@ const ChartTradingViewController = {
                         }
                         data.push(item);
                     }
-                    res.json({status: "ok", data: data})
+                    res.json({ status: "ok", data: data })
                 } else {
-                    const datares = await ChartTemplateMD.find({ userID: userID, page: "dashboard", idcustom:chart });
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "dashboard", idcustom: chart });
                     res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
                 }
             } else {
@@ -543,9 +492,9 @@ const ChartTradingViewController = {
                         id: newChart.idcustom
                     })
                 })
-                
+
             } else {
-                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt1m", idcustom:chart });
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt1m", idcustom: chart });
                 if (chartTp && chartTp[0]) {
                     form.parse(req, async (err, fields, files) => {
                         const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
@@ -557,7 +506,7 @@ const ChartTradingViewController = {
                             id: updateChart.idcustom
                         })
                     });
-                }else {
+                } else {
                     res.json({
                         status: "ok",
                         id: 0
@@ -575,7 +524,7 @@ const ChartTradingViewController = {
             if (chartTp && chartTp[0]) {
                 const chart = req.query.chart;
                 if (!chart) {
-                    
+
                     let data = [];
                     for (var i = 0; i < chartTp.length; i++) {
                         let contentpars = JSON.parse(chartTp[i].content);
@@ -588,9 +537,9 @@ const ChartTradingViewController = {
                         }
                         data.push(item);
                     }
-                    res.json({status: "ok", data: data})
+                    res.json({ status: "ok", data: data })
                 } else {
-                    const datares = await ChartTemplateMD.find({ userID: userID, page: "pt1m", idcustom:chart });
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "pt1m", idcustom: chart });
                     res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
                 }
             } else {
@@ -621,9 +570,9 @@ const ChartTradingViewController = {
                         id: newChart.idcustom
                     })
                 })
-                
+
             } else {
-                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "ai", idcustom:chart });
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "ai", idcustom: chart });
                 if (chartTp && chartTp[0]) {
                     form.parse(req, async (err, fields, files) => {
                         const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
@@ -635,7 +584,7 @@ const ChartTradingViewController = {
                             id: updateChart.idcustom
                         })
                     });
-                }else {
+                } else {
                     res.json({
                         status: "ok",
                         id: 0
@@ -653,7 +602,7 @@ const ChartTradingViewController = {
             if (chartTp && chartTp[0]) {
                 const chart = req.query.chart;
                 if (!chart) {
-                    
+
                     let data = [];
                     for (var i = 0; i < chartTp.length; i++) {
                         let contentpars = JSON.parse(chartTp[i].content);
@@ -666,9 +615,9 @@ const ChartTradingViewController = {
                         }
                         data.push(item);
                     }
-                    res.json({status: "ok", data: data})
+                    res.json({ status: "ok", data: data })
                 } else {
-                    const datares = await ChartTemplateMD.find({ userID: userID, page: "ai", idcustom:chart });
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "ai", idcustom: chart });
                     res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
                 }
             } else {
@@ -699,9 +648,9 @@ const ChartTradingViewController = {
                         id: newChart.idcustom
                     })
                 })
-                
+
             } else {
-                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pttrend", idcustom:chart });
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pttrend", idcustom: chart });
                 if (chartTp && chartTp[0]) {
                     form.parse(req, async (err, fields, files) => {
                         const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
@@ -713,7 +662,7 @@ const ChartTradingViewController = {
                             id: updateChart.idcustom
                         })
                     });
-                }else {
+                } else {
                     res.json({
                         status: "ok",
                         id: 0
@@ -731,7 +680,7 @@ const ChartTradingViewController = {
             if (chartTp && chartTp[0]) {
                 const chart = req.query.chart;
                 if (!chart) {
-                    
+
                     let data = [];
                     for (var i = 0; i < chartTp.length; i++) {
                         let contentpars = JSON.parse(chartTp[i].content);
@@ -744,9 +693,9 @@ const ChartTradingViewController = {
                         }
                         data.push(item);
                     }
-                    res.json({status: "ok", data: data})
+                    res.json({ status: "ok", data: data })
                 } else {
-                    const datares = await ChartTemplateMD.find({ userID: userID, page: "pttrend", idcustom:chart });
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "pttrend", idcustom: chart });
                     res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
                 }
             } else {
@@ -777,9 +726,9 @@ const ChartTradingViewController = {
                         id: newChart.idcustom
                     })
                 })
-                
+
             } else {
-                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt3m", idcustom:chart });
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "pt3m", idcustom: chart });
                 if (chartTp && chartTp[0]) {
                     form.parse(req, async (err, fields, files) => {
                         const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
@@ -791,7 +740,7 @@ const ChartTradingViewController = {
                             id: updateChart.idcustom
                         })
                     });
-                }else {
+                } else {
                     res.json({
                         status: "ok",
                         id: 0
@@ -809,7 +758,7 @@ const ChartTradingViewController = {
             if (chartTp && chartTp[0]) {
                 const chart = req.query.chart;
                 if (!chart) {
-                    
+
                     let data = [];
                     for (var i = 0; i < chartTp.length; i++) {
                         let contentpars = JSON.parse(chartTp[i].content);
@@ -822,9 +771,9 @@ const ChartTradingViewController = {
                         }
                         data.push(item);
                     }
-                    res.json({status: "ok", data: data})
+                    res.json({ status: "ok", data: data })
                 } else {
-                    const datares = await ChartTemplateMD.find({ userID: userID, page: "pt3m", idcustom:chart });
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "pt3m", idcustom: chart });
                     res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
                 }
             } else {
@@ -855,9 +804,9 @@ const ChartTradingViewController = {
                         id: newChart.idcustom
                     })
                 })
-                
+
             } else {
-                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "csfree", idcustom:chart });
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "csfree", idcustom: chart });
                 if (chartTp && chartTp[0]) {
                     form.parse(req, async (err, fields, files) => {
                         const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
@@ -869,7 +818,7 @@ const ChartTradingViewController = {
                             id: updateChart.idcustom
                         })
                     });
-                }else {
+                } else {
                     res.json({
                         status: "ok",
                         id: 0
@@ -887,7 +836,7 @@ const ChartTradingViewController = {
             if (chartTp && chartTp[0]) {
                 const chart = req.query.chart;
                 if (!chart) {
-                    
+
                     let data = [];
                     for (var i = 0; i < chartTp.length; i++) {
                         let contentpars = JSON.parse(chartTp[i].content);
@@ -900,9 +849,9 @@ const ChartTradingViewController = {
                         }
                         data.push(item);
                     }
-                    res.json({status: "ok", data: data})
+                    res.json({ status: "ok", data: data })
                 } else {
-                    const datares = await ChartTemplateMD.find({ userID: userID, page: "csfree", idcustom:chart });
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "csfree", idcustom: chart });
                     res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
                 }
             } else {
@@ -933,9 +882,9 @@ const ChartTradingViewController = {
                         id: newChart.idcustom
                     })
                 })
-                
+
             } else {
-                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstplus", idcustom:chart });
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstplus", idcustom: chart });
                 if (chartTp && chartTp[0]) {
                     form.parse(req, async (err, fields, files) => {
                         const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
@@ -947,13 +896,13 @@ const ChartTradingViewController = {
                             id: updateChart.idcustom
                         })
                     });
-                }else {
+                } else {
                     res.json({
                         status: "ok",
                         id: 0
                     })
                 }
-                
+
             }
         } catch (err) {
             res.json({ code: 500, error: "lỗi save chart cstplus" });
@@ -966,7 +915,7 @@ const ChartTradingViewController = {
             if (chartTp && chartTp[0]) {
                 const chart = req.query.chart;
                 if (!chart) {
-                    
+
                     let data = [];
                     for (var i = 0; i < chartTp.length; i++) {
                         let contentpars = JSON.parse(chartTp[i].content);
@@ -979,9 +928,9 @@ const ChartTradingViewController = {
                         }
                         data.push(item);
                     }
-                    res.json({status: "ok", data: data})
+                    res.json({ status: "ok", data: data })
                 } else {
-                    const datares = await ChartTemplateMD.find({ userID: userID, page: "cstplus", idcustom:chart });
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "cstplus", idcustom: chart });
                     res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
                 }
             } else {
@@ -1012,9 +961,9 @@ const ChartTradingViewController = {
                         id: newChart.idcustom
                     })
                 })
-                
+
             } else {
-                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstrend", idcustom:chart });
+                const chartTp = await ChartTemplateMD.find({ userID: userID, page: "cstrend", idcustom: chart });
                 if (chartTp && chartTp[0]) {
                     form.parse(req, async (err, fields, files) => {
                         const updateChart = await ChartTemplateMD.findByIdAndUpdate(chartTp[0]._id, {
@@ -1026,7 +975,7 @@ const ChartTradingViewController = {
                             id: updateChart.idcustom
                         })
                     });
-                }else {
+                } else {
                     res.json({
                         status: "ok",
                         id: 0
@@ -1044,7 +993,7 @@ const ChartTradingViewController = {
             if (chartTp && chartTp[0]) {
                 const chart = req.query.chart;
                 if (!chart) {
-                    
+
                     let data = [];
                     for (var i = 0; i < chartTp.length; i++) {
                         let contentpars = JSON.parse(chartTp[i].content);
@@ -1057,9 +1006,9 @@ const ChartTradingViewController = {
                         }
                         data.push(item);
                     }
-                    res.json({status: "ok", data: data})
+                    res.json({ status: "ok", data: data })
                 } else {
-                    const datares = await ChartTemplateMD.find({ userID: userID, page: "cstrend", idcustom:chart });
+                    const datares = await ChartTemplateMD.find({ userID: userID, page: "cstrend", idcustom: chart });
                     res.json({ status: "ok", data: { id: datares[0].idcustom, content: datares[0].content, name: datares[0].name, timestamp: parseInt((new Date().getTime()) / 1000) } });
                 }
             } else {
@@ -1069,14 +1018,57 @@ const ChartTradingViewController = {
             res.json({ code: 500, error: "lỗi load chart cstrend" });
         }
     },
-    deleteChart: async(req, res) => {
+    deleteChart: async (req, res) => {
         try {
             const userID = req.query.user.split("_")[0];
             const chartID = req.query.chart;
-            const chartTp = await ChartTemplateMD.findOneAndDelete({ userID: userID, idcustom: chartID});
-            res.json({code: 200, data: chartTp});
-        }catch(err) {
-            res.json({code: 500, error: "Lỗi xóa chart"});
+            const chartTp = await ChartTemplateMD.findOneAndDelete({ userID: userID, idcustom: chartID });
+            res.json({ code: 200, data: chartTp });
+        } catch (err) {
+            res.json({ code: 500, error: "Lỗi xóa chart" });
+        }
+    },
+    searchIndicator: async (req, res) => {
+        try {
+            const valueSearch = req.query.search;
+            TradingView.searchIndicator(valueSearch).then((rs) => {
+                res.json({ code: 200, data: rs });
+            });
+        } catch (err) {
+            res.json({ code: 500, error: "Có lỗi xảy ra vui lòng thử lại" });
+        }
+    },
+    getIndiCator: async (req, res) => {
+        try {
+            const idIndi = req.query.idIndi;
+            TradingView.getIndicator(`${idIndi}`).then((indic) => {
+                let client = new TradingView.Client();
+                let chart = new client.Session.Chart();
+                chart.setMarket('BINANCE:BTCEUR', {
+                    timeframe: '5',
+                    range: 10000,
+                });
+                const STD = new chart.Study(indic);
+
+                STD.onError((...err) => {
+                    console.log('Study error:', ...err);
+                });
+
+                STD.onReady(() => {
+                    console.log(`STD '${STD.instance.description}' Loaded !`);
+                    console.log(STD);
+                });
+
+                // STD.onUpdate(() => {
+                //   console.log('Graphic data:', STD.graphic);
+                //   // console.log('Tables:', changes, STD.graphic.tables);
+                //   // console.log('Cells', STD.graphic.tables[0].cells());
+                //   client.end();
+                // });
+                res.json({ code: 200, data: indic });
+            });
+        } catch (err) {
+            res.json({ code: 500, error: "Có lỗi xảy ra vui lòng thử lại" });
         }
     }
 }

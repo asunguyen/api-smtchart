@@ -32,5 +32,9 @@ router.get("/cstrend/1.1/charts", ChartTradingViewController.getChart_cstrend);
 //delete chart
 router.delete("/dashboard/1.1/charts", ChartTradingViewController.deleteChart);
 
+//search
+
+router.get("/search-indicator", ChartTradingViewController.searchIndicator);
+router.get("/get-detail-indicator", ChartTradingViewController.getIndiCator);
 
 module.exports = router;
