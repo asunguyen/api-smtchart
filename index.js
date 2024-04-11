@@ -57,8 +57,8 @@ const connectionParams = {
     useUnifiedTopology: true
 }
 const server = createServer({
-    key: fs.readFileSync(path.join(__dirname, "/public", "apichartkey.key") ),
-    cert: fs.readFileSync(path.join(__dirname, "/public", "apichart.pem") ),
+    key: fs.readFileSync(path.join(__dirname, "/public", "apichartkey.key")),
+    cert: fs.readFileSync(path.join(__dirname, "/public", "apichart.pem")),
 }, app);
 const io = new Server(server);
 
@@ -70,24 +70,25 @@ let totalOnline = 0;
 server.listen(5001, () => {
     mongoose.connect(dbUrl, connectionParams).then(() => {
         console.log("connect db success");
-        let client = new TradingView.Client(); // Creates a websocket client
-        let chart = new client.Session.Chart(); // Init a Chart session
-        chart.setTimezone('Asia/Ho_Chi_Minh');
-        chart.setMarket("SSI", {
-            timeframe: "1",
-            range: 20
-        });
-        chart.onError((...err) => { // Listen for errors (can avoid crash)
-            console.error('Chart error changeSymbol:', ...err);
-        });
 
-        chart.onSymbolLoaded(() => { // When the symbol is successfully loaded
-            console.log(`Market "${chart.infos.description}" loaded !`);
-        });
         io.on('connection', (socket) => {
             console.log("client:: ", socket.id);
             totalOnline++;
             console.log("connection + 1, totalOnline:: ", totalOnline);
+            let client = new TradingView.Client(); // Creates a websocket client
+            let chart = new client.Session.Chart(); // Init a Chart session
+            chart.setTimezone('Asia/Ho_Chi_Minh');
+            chart.setMarket("SSI", {
+                timeframe: "1",
+                range: 20
+            });
+            chart.onError((...err) => { // Listen for errors (can avoid crash)
+                console.error('Chart error changeSymbol:', ...err);
+            });
+
+            chart.onSymbolLoaded(() => { // When the symbol is successfully loaded
+                console.log(`Market "${chart.infos.description}" loaded !`);
+            });
             chart.onUpdate(() => { // When price changes
                 try {
                     if (!chart || !chart.periods[0]) return;
@@ -139,6 +140,8 @@ server.listen(5001, () => {
                 totalOnline--;
                 console.log("disconnect - 1, totalOnline:: ", totalOnline);
                 client.end();
+                client = null;
+                chart = null;
             });
         });
     }).catch((e) => {
