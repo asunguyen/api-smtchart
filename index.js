@@ -95,10 +95,10 @@ server.listen(5001, () => {
                     console.log("chart index update:: ", chart.infos.description);
                     let data = chart.periods;
                     data[0].symbol = chart.infos.name;
-                    if (chart.infos.depay) {
+                    if (chart && chart.infos && chart.infos.depay) {
                         data[0].time = data[0].time + chart.infos.depay;
                     }
-                    socket.emit("onData", { chart: data[0], infos: chart.infos });
+                    socket.emit("onData", { chart: data[0], infos: chart? chart.infos:{}});
                 } catch (err) {
                     console.log("update error:: ", err);
                 }
@@ -139,9 +139,6 @@ server.listen(5001, () => {
             socket.on("disconnect", () => {
                 totalOnline--;
                 console.log("disconnect - 1, totalOnline:: ", totalOnline);
-                client.end();
-                client = null;
-                chart = null;
             });
         });
     }).catch((e) => {

@@ -289,15 +289,17 @@ const ChartTradingViewController = {
                             const response = await axios.get(url);
                             let dataresponse = response.data.data;
                             let bars = [];
-                            for (var i = 0; i < dataresponse.t.length; i++) {
-                                bars = [...bars, {
-                                    close: dataresponse.c[i],
-                                    max: dataresponse.h[i],
-                                    min: dataresponse.l[i],
-                                    open: dataresponse.o[i],
-                                    time: dataresponse.t[i],
-                                    volume: dataresponse.v[i]
-                                }]
+                            if (dataresponse && dataresponse.t) {
+                                for (var i = 0; i < dataresponse.t.length; i++) {
+                                    bars = [...bars, {
+                                        close: dataresponse.c[i],
+                                        max: dataresponse.h[i],
+                                        min: dataresponse.l[i],
+                                        open: dataresponse.o[i],
+                                        time: dataresponse.t[i],
+                                        volume: dataresponse.v[i]
+                                    }]
+                                }
                             }
                             res.json({ code: 200, data: bars });
                         }
