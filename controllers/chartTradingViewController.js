@@ -354,6 +354,7 @@ const ChartTradingViewController = {
                 let data = rs.concat(listSb);
                 data.forEach(symbol => {
                     allSymbols = [...allSymbols, {
+                        ...symbol,
                         symbol: symbol.symbol,
                         pro_name: symbol.symbol,
                         full_name: symbol.id,
@@ -1042,33 +1043,10 @@ const ChartTradingViewController = {
     },
     getIndiCator: async (req, res) => {
         try {
-            const idIndi = req.query.idIndi;
-            TradingView.getIndicator(`${idIndi}`).then((indic) => {
-                let client = new TradingView.Client();
-                let chart = new client.Session.Chart();
-                chart.setMarket('BINANCE:BTCEUR', {
-                    timeframe: '5',
-                    range: 10000,
-                });
-                const STD = new chart.Study(indic);
-
-                STD.onError((...err) => {
-                    console.log('Study error:', ...err);
-                });
-
-                STD.onReady(() => {
-                    console.log(`STD '${STD.instance.description}' Loaded !`);
-                    console.log(STD);
-                });
-
-                // STD.onUpdate(() => {
-                //   console.log('Graphic data:', STD.graphic);
-                //   // console.log('Tables:', changes, STD.graphic.tables);
-                //   // console.log('Cells', STD.graphic.tables[0].cells());
-                //   client.end();
-                // });
-                res.json({ code: 200, data: indic });
-            });
+            const url = `https://pine-facade.tradingview.com/pine-facade/get/${req.query.idIndi}/1?no_4xx=false`;
+            const response = await axios.get(url);
+            let dataRP = response.data;
+            res.json({ code: 200, data: dataRP });
         } catch (err) {
             res.json({ code: 500, error: "Có lỗi xảy ra vui lòng thử lại" });
         }
