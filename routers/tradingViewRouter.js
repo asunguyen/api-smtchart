@@ -36,5 +36,6 @@ router.delete("/dashboard/1.1/charts", ChartTradingViewController.deleteChart);
 
 router.get("/search-indicator", ChartTradingViewController.searchIndicator);
 router.get("/get-detail-indicator", ChartTradingViewController.getIndiCator);
+router.post("/convert-indicator", ChartTradingViewController.convertIndicator)
 
 module.exports = router;

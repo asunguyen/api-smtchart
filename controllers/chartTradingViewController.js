@@ -1043,9 +1043,36 @@ const ChartTradingViewController = {
     },
     getIndiCator: async (req, res) => {
         try {
-            const url = `https://pine-facade.tradingview.com/pine-facade/get/${req.query.idIndi}/1?no_4xx=false`;
-            const response = await axios.get(url);
-            let dataRP = response.data;
+            const url1 = `https://pine-facade.tradingview.com/pine-facade/translate/${req.query.idIndi}/1.0?user_name=smattrading`;
+            const ress = await axios.get(url1);
+            res.json({ code: 200, data: ress.data });
+        } catch (err) {
+            res.json({ code: 500, error: err });
+        }
+    },
+    convertIndicator: async (req, res) => {
+        try {
+            const res = await fetch("https://pine-facade.tradingview.com/pine-facade/save/new_draft?user_name=smattrading&allow_use_existing_draft=true", {
+                "headers": {
+                    "accept": "*/*",
+                    "accept-language": "vi-VN,vi;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6,en;q=0.5",
+                    "cache-control": "no-cache",
+                    "content-type": "multipart/form-data; boundary=----WebKitFormBoundaryS5L6AOk244YAXBRp",
+                    "pragma": "no-cache",
+                    "sec-ch-ua": "\"Chromium\";v=\"122\", \"Not(A:Brand\";v=\"24\", \"Google Chrome\";v=\"122\"",
+                    "sec-ch-ua-mobile": "?0",
+                    "sec-ch-ua-platform": "\"Windows\"",
+                    "sec-fetch-dest": "empty",
+                    "sec-fetch-mode": "cors",
+                    "sec-fetch-site": "same-site",
+                    "cookie": "cookiePrivacyPreferenceBannerProduction=notApplicable; _ga=GA1.1.706331468.1696968426; cookiesSettings={\"analytics\":true,\"advertising\":true}; _ga_1P588Q6QXH=GS1.1.1697733438.4.0.1697733439.0.0.0; device_t=ZGlMYUF3OjAsWkc2WkF3OjA.5XaqA4sWDTJXQ78PGOo2Svx2QgH5tKdeL5USToo4f1U; sessionid=w81h77kfb05a9lwrdeb8s3prpmrgn0zl; sessionid_sign=v2:lLPXKwSAqwxlpYGpdk+hDOIOAMjCC3KCXoU/O7+8DZ0=; tv_ecuid=e2093a95-6564-489d-b68f-5acbcb802722; _sp_ses.cf1a=*; _ga_R53B6WMR8T=GS1.1.1713798119.57.1.1713800287.0.0.0; _ga_53M0R0ZT9V=GS1.1.1713798119.57.1.1713800287.0.0.0; _sp_id.cf1a=ca63cf55-06cb-4019-a8c1-a4e48422b3ef.1696968425.57.1713801445.1713720273.fac93dc5-a445-40ff-aa07-bfd6aecd2cd6; _ga_YVVRYGL0E0=GS1.1.1713798372.65.1.1713801562.60.0.0",
+                    "Referer": "https://www.tradingview.com/",
+                    "Referrer-Policy": "origin-when-cross-origin"
+                },
+                "body": "------WebKitFormBoundaryS5L6AOk244YAXBRp\r\nContent-Disposition: form-data; name=\"source\"\r\n\r\n//@version=5\r\nindicator(title='[SMT] Buy & Sell Renko Based - Alerts', shorttitle='[SMT] B&S Renko', overlay=true)\r\n\r\n//INPUTS\r\nrenkoATRLength = input.int(10, minval=1, title='ATR Length')\r\n\r\n//CALCULATION\r\nparam = ticker.renko(syminfo.tickerid, 'ATR', renkoATRLength)\r\n\r\nrenkoClose = request.security(param, timeframe.period, close)\r\nrenkoOpen = request.security(param, timeframe.period, open)\r\n\r\nbuySignal = ta.crossunder(renkoOpen, renkoClose)\r\nsellSignal = ta.crossover(renkoOpen, renkoClose)\r\n\r\ncol = renkoClose < renkoOpen ? #F23645 : #089981\r\n\r\n//PLOTS\r\nplot(renkoOpen, title=\"Renko Open\", style=plot.style_line, linewidth=2, color=col)\r\nplotshape(buySignal, \"Buy\", shape.labelup, location.belowbar, #089981, 0, \"Buy\", color.white)\r\nplotshape(sellSignal, \"Sell\", shape.labeldown, location.abovebar, #F23645, 0, \"Sell\", color.white)\r\n\r\n// ALERTS\r\nalertcondition(buySignal, \"[SMT] B&S Renko: Buy!\", \"Buy!\")\r\nalertcondition(sellSignal, \"[SMT] B&S Renko: Sell!\", \"Sell!\")\r\nalertcondition(buySignal or sellSignal, \"[SMT] B&S Renko: Changed Direction!\", \"Changed Direction!\")\r\n------WebKitFormBoundaryS5L6AOk244YAXBRp--\r\n",
+                "method": "POST"
+            });
+            let dataRP = res.data;
             res.json({ code: 200, data: dataRP });
         } catch (err) {
             res.json({ code: 500, error: "Có lỗi xảy ra vui lòng thử lại" });
