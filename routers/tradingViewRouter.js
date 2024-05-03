@@ -21,6 +21,7 @@ router.post("/cstrend/1.1/charts", ChartTradingViewController.saveChart_cstrend)
 
 //get chart
 router.get("/dashboard/1.1/charts", ChartTradingViewController.getChartDashboard);
+router.get("/dashboard/1.1/study_templates", ChartTradingViewController.getChartDashboard);
 router.get("/pt1m/1.1/charts",ChartTradingViewController.getChartpt1m);
 router.get("/ai/1.1/charts", ChartTradingViewController.getChartai);
 router.get("/pttrend/1.1/charts", ChartTradingViewController.getChartpttrend);
