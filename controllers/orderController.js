@@ -38,6 +38,14 @@ const orderController = {
                 let returnUrl = config.get('vnp_ReturnUrl');
                 let orderId = moment(date).format('DDHHmmss');
                 let amount = req.body.amount;
+                let months = req.body.months;
+                const newOrder = await new OrderModel({
+                    amount: amount,
+                    goi: months,
+                    userID: req.user.id,
+                    timeUse: months*30
+                })
+                const licenseItem = await newOrder.save();
                 let bankCode = req.body.bankCode || "VNPAYQR";
 
                 let locale = req.body.language || "vn";
@@ -51,8 +59,8 @@ const orderController = {
                 vnp_Params['vnp_TmnCode'] = tmnCode;
                 vnp_Params['vnp_Locale'] = locale;
                 vnp_Params['vnp_CurrCode'] = currCode;
-                vnp_Params['vnp_TxnRef'] = orderId;
-                vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + orderId;
+                vnp_Params['vnp_TxnRef'] = licenseItem._id;
+                vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + licenseItem._id;
                 vnp_Params['vnp_OrderType'] = 'other';
                 vnp_Params['vnp_Amount'] = amount * 100;
                 vnp_Params['vnp_ReturnUrl'] = returnUrl;
@@ -76,5 +84,20 @@ const orderController = {
             }
         })
     },
+    updateOrder: async(req, res) => {
+        authMiddl.verifyToken(req, res, async () => {
+            try{
+                let idOrder = req.body.id;
+                let orderUpdate = await OrderModel.findByIdAndUpdate(idOrder, {status: "success"});
+                let user = await UserModel.findById(req.user.id);
+                let expired = new Date(user.expired);
+                expired.setDate(expired.getDate() + orderUpdate.timeUse);
+                user = await UserModel.findByIdAndUpdate(req.user.id, {expired: expired});
+                res.json({code: 200, data: user.expired});
+            }catch(err) {
+                res.json({code: 500, error: "Vui lòng liên hệ admin"});
+            }
+        })
+    }
 };
 module.exports = orderController;

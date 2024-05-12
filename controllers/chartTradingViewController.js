@@ -255,81 +255,31 @@ const ChartTradingViewController = {
                     }
                     return;
                 } else {
-                    if (resol == "1") {
-                        if (type == "spot") {
-                            const url = `https://api.binance.com/api/v3/klines?endTime=${toDate}999&symbol=${symbol}&interval=1m&limit=1000`;
-                            const response = await axios.get(url);
-                            let dataresponse = response.data;
-
-                            const dataR = dataresponse.map((d) => ({
-                                time: d[0] / 1000,
-                                min: d[3],
-                                max: d[2],
-                                close: d[4],
-                                open: d[1],
-                                volume: d[5]
-                            }))
-                            res.json({ code: 200, data: dataR });
-                        } else {
-                            switch (symbol) {
-                                case "SP500":
-                                    symbol = "SPX";
-                                    break;
-                                case "US30":
-                                    symbol = "YM";
-                                    break;
-                                case "US100":
-                                    symbol = "NQ";
-                                    break;
-                                case "SXP500":
-                                    symbol = "SXP";
-                                    break;
-                            }
-                            const url = `https://my.litefinance.vn/vi/chart/get-history?symbol=${symbol}&resolution=1&from=${fromDate}&to=${toDate}`;
-                            const response = await axios.get(url);
-                            let dataresponse = response.data.data;
-                            let bars = [];
-                            if (dataresponse && dataresponse.t) {
-                                for (var i = 0; i < dataresponse.t.length; i++) {
-                                    bars = [...bars, {
-                                        close: dataresponse.c[i],
-                                        max: dataresponse.h[i],
-                                        min: dataresponse.l[i],
-                                        open: dataresponse.o[i],
-                                        time: dataresponse.t[i],
-                                        volume: dataresponse.v[i]
-                                    }]
-                                }
-                            }
-                            res.json({ code: 200, data: bars });
+                    let client = new TradingView.Client();
+                    let chart = new client.Session.Chart();
+                    chart.setTimezone('Asia/Ho_Chi_Minh');
+                    chart.setMarket(symbol, {
+                        timeframe: resol,
+                        to: toDate * 1000,
+                        from: fromDate * 1000,
+                        range: 100000
+                    });
+                    chart.onUpdate(async () => { // When price changes
+                        if (!chart.periods[0]) {
+                            res.json({ code: 200, data: [] });
+                            client.end();
                         }
-                    } else {
-                        let client = new TradingView.Client();
-                        let chart = new client.Session.Chart();
-                        chart.setTimezone('Asia/Ho_Chi_Minh');
-                        chart.setMarket(symbol, {
-                            timeframe: resol,
-                            to: toDate * 1000,
-                            from: fromDate * 1000,
-                            range: 100000
-                        });
-                        chart.onUpdate(async () => { // When price changes
-                            if (!chart.periods[0]) {
-                                res.json({ code: 200, data: [] });
-                                client.end();
-                            }
-                            let data = chart.periods.reverse();
-                            res.json({ code: 200, data: data });
-                            client.end();
-                            return;
-                        });
-                        chart.onError((...err) => { // Listen for errors (can avoid crash)
-                            console.log("chart histor error:: ", err);
-                            res.json({ code: 500, error: err });
-                            client.end();
-                            return;
-                        });
-                    }
+                        let data = chart.periods.reverse();
+                        res.json({ code: 200, data: data });
+                        client.end();
+                        return;
+                    });
+                    chart.onError((...err) => { // Listen for errors (can avoid crash)
+                        console.log("chart histor error:: ", err);
+                        res.json({ code: 500, error: err });
+                        client.end();
+                        return;
+                    });
                 }
 
             }
