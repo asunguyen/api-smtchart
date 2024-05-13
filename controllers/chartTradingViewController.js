@@ -255,6 +255,15 @@ const ChartTradingViewController = {
                     }
                     return;
                 } else {
+
+                    // TradingView.loginUser("fedimav274", "fedimav274@A123561", false).then((user) => {
+                    //     console.log('User:', user);
+                    //     console.log('Sessionid:', user.session);
+                    //     console.log('Signature:', user.signature);
+                    //   }).catch((err) => {
+                    //     console.error('Login error:', err.message);
+                    //   });
+
                     let client = new TradingView.Client();
                     let chart = new client.Session.Chart();
                     chart.setTimezone('Asia/Ho_Chi_Minh');
@@ -262,7 +271,7 @@ const ChartTradingViewController = {
                         timeframe: resol,
                         to: toDate * 1000,
                         from: fromDate * 1000,
-                        range: 100000
+                        range: 1000000
                     });
                     chart.onUpdate(async () => { // When price changes
                         if (!chart.periods[0]) {

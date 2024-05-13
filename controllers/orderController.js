@@ -91,6 +91,9 @@ const orderController = {
                 let orderUpdate = await OrderModel.findByIdAndUpdate(idOrder, {status: "success"});
                 let user = await UserModel.findById(req.user.id);
                 let expired = new Date(user.expired);
+                if(expired.getTime() < new Date().getTime()) {
+                    expired = new Date();
+                }
                 expired.setDate(expired.getDate() + orderUpdate.timeUse);
                 user = await UserModel.findByIdAndUpdate(req.user.id, {expired: expired});
                 res.json({code: 200, data: user.expired});
