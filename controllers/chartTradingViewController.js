@@ -213,84 +213,152 @@ const ChartTradingViewController = {
             let toDate = req.query.to || new Date().getTime();
             let type = req.query.type;
             let resol = "1";
+            let resolVN = "1";
+            let resolFX = req.query.resolution || "1";
+            let resolCoin = req.query.resolution + "m" || "1m";
             let ranged = parseInt((toDate - fromDate));
             const resolution = req.query.resolution || "D";
-            console.log("exchange:: ", exchange);
+            if (parseFloat(resolution) >= 1) {
+                resolFX = "1";
+            }
+            if (parseFloat(resolution) >= 5) {
+                resolFX = "5";
+            }
+            if (parseFloat(resolution) >= 15) {
+                resolFX = "15";
+            }
+            if (parseFloat(resolution) >= 30) {
+                resolFX = "30";
+                resolCoin = "30m"
+            }
             if (parseFloat(resolution) >= 60) {
                 resol = "H";
+                resolVN = "1H";
+                resolCoin = parseFloat(resolution)/60 + "h";
+                resolFX = "30"
             }
             if (resolution.search("D") >= 0) {
                 resol = "D"
+                resolVN = "1D"
+                resolFX = "D";
+                resolCoin = "1d";
             }
             if (resolution.search("W") >= 0) {
                 resol = "W"
+                resolVN = "1D"
+                resolFX = "D";
+                resolCoin = "1w"
             }
             if (resolution.search("M") >= 0) {
                 resol = "M"
+                resolVN = "1D"
+                resolFX = "D";
+                resolCoin = "1w"
             }
             if (resol != "1") {
                 ranged = parseInt((toDate - fromDate) / 60);
             }
+            const url1 = `https://histdatafeed.vps.com.vn/tradingview/history?symbol=${symbol}&resolution=${resolFX}&from=${fromDate}&to=${toDate}`;
             if (symbol && (symbol == "VN30F1M" || symbol == "VN30F1Q" || symbol == "VN30F2M" || symbol == "VN30F2Q")) {
                 const fromCustom = resol == "1" ? Math.round((new Date().getTime() - 15536000000) / 1000) : fromDate;
-                const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/derivative?from=${fromCustom}&to=${toDate}&symbol=${symbol}&resolution=${resolution}`;
+                const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/derivative?from=${fromCustom}&to=${toDate}&symbol=${symbol}&resolution=${resolVN}`;
+                
                 const response = await axios.get(url);
                 let dataRP = response.data;
                 res.json({ code: 200, data: dataRP });
                 return;
-
             } else {
                 if (exchange == "HNX" || exchange == "HOSE" || exchange == "UPCOM") {
                     const fromCustom = resol == "1" ? Math.round((new Date().getTime() - 15536000000) / 1000) : fromDate;
                     if (symbol == "VNINDEX") {
-                        const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/index?from=${fromCustom}&to=${toDate}&symbol=${symbol}&resolution=${resolution}`;
+                        const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/index?from=${fromCustom}&to=${toDate}&symbol=${symbol}&resolution=${resolVN}`;
                         const response = await axios.get(url);
                         let dataRP = response.data;
                         res.json({ code: 200, data: dataRP });
                     } else {
-                        const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/stock?from=${fromCustom}&to=${toDate}&symbol=${symbol}&resolution=${resolution}`;
+                        const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/stock?from=${fromCustom}&to=${toDate}&symbol=${symbol}&resolution=${resolVN}`;
                         const response = await axios.get(url);
                         let dataRP = response.data;
                         res.json({ code: 200, data: dataRP });
                     }
                     return;
                 } else {
-
-                    // TradingView.loginUser("fedimav274", "fedimav274@A123561", false).then((user) => {
-                    //     console.log('User:', user);
-                    //     console.log('Sessionid:', user.session);
-                    //     console.log('Signature:', user.signature);
-                    //   }).catch((err) => {
-                    //     console.error('Login error:', err.message);
-                    //   });
-
-                    let client = new TradingView.Client();
-                    let chart = new client.Session.Chart();
-                    chart.setTimezone('Asia/Ho_Chi_Minh');
-                    chart.setMarket(symbol, {
-                        timeframe: resol,
-                        to: toDate * 1000,
-                        from: fromDate * 1000,
-                        range: 1000000
-                    });
-                    chart.onUpdate(async () => { // When price changes
-                        if (!chart.periods[0]) {
-                            res.json({ code: 200, data: [] });
-                            client.end();
+                    if (resol == "1") {
+                        if (type == "spot") {
+                            const url = `https://api.binance.com/api/v3/klines?endTime=${toDate}999&symbol=${symbol}&interval=${resolCoin}&limit=1000`;
+                            const response = await axios.get(url);
+                            let dataresponse = response.data;
+                            const dataR = dataresponse.map((d) => ({
+                                time: d[0] / 1000,
+                                min: d[3],
+                                max: d[2],
+                                close: d[4],
+                                open: d[1],
+                                volume: d[5]
+                            }))
+                            res.json({ code: 200, data: dataR });
+                        } else {
+                            switch (symbol) {
+                                case "SP500":
+                                    symbol = "SPX";
+                                    break;
+                                case "US30":
+                                    symbol = "YM";
+                                    break;
+                                case "US100":
+                                    symbol = "NQ";
+                                    break;
+                                case "SXP500":
+                                    symbol = "SXP";
+                                    break;
+                            }
+                            const url = `https://my.litefinance.vn/vi/chart/get-history?symbol=${symbol}&resolution=${resolFX}&from=${fromDate}&to=${toDate}`;
+                            const response = await axios.get(url);
+                            let dataresponse = response.data.data;
+                            let bars = [];
+                            if (dataresponse && dataresponse.t) {
+                                for (var i = 0; i < dataresponse.t.length; i++) {
+                                    bars = [...bars, {
+                                        close: dataresponse.c[i],
+                                        max: dataresponse.h[i],
+                                        min: dataresponse.l[i],
+                                        open: dataresponse.o[i],
+                                        time: dataresponse.t[i],
+                                        volume: dataresponse.v[i]
+                                    }]
+                                }
+                            }
+                            res.json({ code: 200, data: bars });
                         }
-                        let data = chart.periods.reverse();
-                        res.json({ code: 200, data: data });
-                        client.end();
-                        return;
-                    });
-                    chart.onError((...err) => { // Listen for errors (can avoid crash)
-                        console.log("chart histor error:: ", err);
-                        res.json({ code: 500, error: err });
-                        client.end();
-                        return;
-                    });
+                    } else {
+                        let client = new TradingView.Client();
+                        let chart = new client.Session.Chart();
+                        chart.setTimezone('Asia/Ho_Chi_Minh');
+                        chart.setMarket(symbol, {
+                            timeframe: resol,
+                            to: toDate * 1000,
+                            from: fromDate * 1000,
+                            range: 100000
+                        });
+                        chart.onUpdate(async () => { // When price changes
+                            if (!chart.periods[0]) {
+                                res.json({ code: 200, data: [] });
+                                client.end();
+                            }
+                            let data = chart.periods.reverse();
+                            res.json({ code: 200, data: data });
+                            console.log("history::: " + symbol);
+                            client.end();
+                            return;
+                        });
+                        chart.onError((...err) => { // Listen for errors (can avoid crash)
+                            console.log("chart histor error:: ", err);
+                            res.json({ code: 500, error: err });
+                            client.end();
+                            return;
+                        });
+                    }
                 }
-
             }
 
         } catch (err) {

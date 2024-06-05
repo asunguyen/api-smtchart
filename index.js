@@ -13,7 +13,7 @@ const vimoRouter = require("./routers/vimoRouter");
 const tradingViewRouter = require("./routers/tradingViewRouter");
 const bolocCophieuRouter = require("./routers/bolocCophieuRouter");
 const orderRouter = require("./routers/orderRouter");
-
+let listSymbol = [];
 const fs = require("fs");
 
 const { createServer } = require('node:https');
@@ -72,9 +72,7 @@ server.listen(5001, () => {
         console.log("connect db success");
 
         io.on('connection', (socket) => {
-            console.log("client:: ", socket.id);
             totalOnline++;
-            console.log("connection + 1, totalOnline:: ", totalOnline);
             let client = new TradingView.Client(); // Creates a websocket client
             let chart = new client.Session.Chart(); // Init a Chart session
             chart.setTimezone('Asia/Ho_Chi_Minh');
@@ -92,7 +90,7 @@ server.listen(5001, () => {
             chart.onUpdate(() => { // When price changes
                 try {
                     if (!chart || !chart.periods[0]) return;
-                    console.log("chart index update:: ", chart.infos.description);
+                    console.log(`totalOnline:: ${totalOnline} chart index update:: ${socket.id} :: ${chart.infos.description}`);
                     let data = chart.periods;
                     data[0].symbol = chart.infos.name;
                     if (chart && chart.infos && chart.infos.depay) {
@@ -122,13 +120,13 @@ server.listen(5001, () => {
                         chart.setMarket(data.symbolInfo.name, {
                             timeframe: resol,
                             to: toDate * 1000,
-                            range: 5000
+                            range: 200
                         });
                     } else {
                         chart.setMarket(data.symbolInfo.exchange + ":" + data.symbolInfo.name, {
                             timeframe: resol,
                             to: toDate * 1000,
-                            range: 5000
+                            range: 200
                         });
                     }
                 } catch (err) {
