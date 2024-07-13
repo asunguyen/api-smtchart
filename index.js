@@ -13,7 +13,6 @@ const vimoRouter = require("./routers/vimoRouter");
 const tradingViewRouter = require("./routers/tradingViewRouter");
 const bolocCophieuRouter = require("./routers/bolocCophieuRouter");
 const orderRouter = require("./routers/orderRouter");
-let listSymbol = [];
 const fs = require("fs");
 
 const { createServer } = require('node:https');
